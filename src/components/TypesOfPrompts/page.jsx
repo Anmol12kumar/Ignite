@@ -1,7 +1,7 @@
+import { promptTypes } from "@/data/content";
 import Section from "@/components/shared/Section";
 import SectionHeader from "@/components/shared/SectionHeader";
-import ContentCard from "@/components/shared/ContentCard";
-import { promptTypes } from "@/data/content";
+import ContentCard from "../shared/ContentCard";
 
 const TypesOfPrompts = () => (
     <Section>

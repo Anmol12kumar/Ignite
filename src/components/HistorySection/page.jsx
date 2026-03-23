@@ -1,7 +1,7 @@
 import ScrollReveal from "@/components/ScrollReveal/page";
+import { timeline } from "@/data/content";
 import Section from "@/components/shared/Section";
 import SectionHeader from "@/components/shared/SectionHeader";
-import { timeline } from "@/data/content";
 
 const HistorySection = () => (
     <Section maxWidth="max-w-3xl">

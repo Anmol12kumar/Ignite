@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/Button";
 import ScrollReveal from "@/components/ScrollReveal/page";
+import { howWeHelpSteps } from "@/data/content";
 import Section from "@/components/shared/Section";
 import SectionHeader from "@/components/shared/SectionHeader";
-import { howWeHelpSteps } from "@/data/content";
 
 const HowWeHelpSection = () => (
     <Section id="how-we-help">

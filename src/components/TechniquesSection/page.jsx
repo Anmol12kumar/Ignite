@@ -1,7 +1,7 @@
 import ScrollReveal from "@/components/ScrollReveal/page";
+import { techniques } from "@/data/content";
 import Section from "@/components/shared/Section";
 import SectionHeader from "@/components/shared/SectionHeader";
-import { techniques } from "@/data/content";
 
 const TechniquesSection = () => (
     <Section id="techniques">

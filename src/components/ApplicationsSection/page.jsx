@@ -1,7 +1,7 @@
-import Section from "@/components/shared/Section";
-import SectionHeader from "@/components/shared/SectionHeader";
 import ContentCard from "@/components/shared/ContentCard";
 import { applications } from "@/data/content";
+import Section from "@/components/shared/Section";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 const ApplicationsSection = () => (
     <Section>

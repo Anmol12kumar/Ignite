@@ -1,7 +1,7 @@
-import Section from "@/components/shared/Section";
-import SectionHeader from "@/components/shared/SectionHeader";
 import ContentCard from "@/components/shared/ContentCard";
 import { futureTrends } from "@/data/content";
+import Section from "@/components/shared/Section";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 const FutureSection = () => (
     <Section>

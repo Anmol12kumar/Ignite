@@ -1,7 +1,7 @@
 import ScrollReveal from "@/components/ScrollReveal/page";
+import { whyItMatters } from "@/data/content";
 import Section from "@/components/shared/Section";
 import SectionHeader from "@/components/shared/SectionHeader";
-import { whyItMatters } from "@/data/content";
 
 const WhatIsSection = () => (
     <Section id="what">

@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useRef, forwardRef } from "react";
 
 const ScrollReveal = forwardRef(

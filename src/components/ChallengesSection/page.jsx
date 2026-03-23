@@ -1,6 +1,6 @@
 import ScrollReveal from "@/components/ScrollReveal/page";
-import Section from "@/components/shared/Section";
 import { challenges, beginnerMistakes } from "@/data/content";
+import Section from "@/components/shared/Section";
 
 const ListColumn = ({ tag, tagColor, title, icon, iconColor, items, direction = "up" }) => (
     <div>
