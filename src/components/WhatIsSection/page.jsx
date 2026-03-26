@@ -30,7 +30,7 @@ const WhatIsSection = () => (
                     <div className="space-y-4">
                         {whyItMatters.map((item) => (
                             <div key={item.n} className="flex gap-4">
-                                <span className="font-mono text-xs text-primary mt-1 flex-shrink-0">{item.n}</span>
+                                <span className="font-mono text-xs text-primary mt-1 shrink-0">{item.n}</span>
                                 <p className="text-sm text-secondary-foreground leading-relaxed">{item.text}</p>
                             </div>
                         ))}

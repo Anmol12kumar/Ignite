@@ -1,9 +1,13 @@
 /** @type {import('tailwindcss').Config} */
-
 export default {
-    theme: {
+  content: [
+    "./src/app/**/*.{js,jsx,ts,tsx}",
+    "./src/components/**/*.{js,jsx,ts,tsx}",
+    "./src/pages/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
     extend: {
-        colors: {
+      colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: "hsl(var(--card))",
@@ -23,12 +27,13 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        },
-        borderRadius: {
+      },
+      borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        },
+      },
     },
-    },
+  },
+  plugins: [],
 };

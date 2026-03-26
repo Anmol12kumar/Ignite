@@ -40,7 +40,7 @@ const HowWeHelpSection = () => (
                 {howWeHelpSteps.map((s, i) => (
                     <ScrollReveal key={s.step} delay={150 + i * 100} direction="left">
                         <div className="flex gap-5 p-5 rounded-lg border border-border/40 bg-card group hover:border-primary/30 transition-colors duration-300">
-                            <span className="font-mono text-2xl font-bold text-primary/30 flex-shrink-0">{s.step}</span>
+                            <span className="font-mono text-2xl font-bold text-primary/30 shrink-0">{s.step}</span>
                             <div>
                                 <h3 className="font-semibold mb-1 text-sm">{s.title}</h3>
                                 <p className="text-sm text-secondary-foreground leading-relaxed">{s.desc}</p>

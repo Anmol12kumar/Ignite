@@ -3,7 +3,7 @@ import ScrollReveal from "@/components/ScrollReveal/page";
 
 const Hero = () => (
     <section className="relative min-h-[90vh] flex items-center pt-14 overflow-hidden">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/6 rounded-full blur-[100px] animate-pulse-glow pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-75 bg-primary/6 rounded-full blur-[100px] animate-pulse-glow pointer-events-none" />
 
         <div className="container relative z-10">
             <div className="max-w-2xl">

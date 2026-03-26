@@ -16,7 +16,7 @@ const ListColumn = ({ tag, tagColor, title, icon, iconColor, items, direction = 
             {items.map((item, i) => (
                 <ScrollReveal key={i} delay={120 + i * 60} direction={direction}>
                     <div className="flex gap-3 p-4 rounded-lg border border-border/30 bg-card">
-                        <span className={`${iconColor} font-mono text-xs mt-0.5 flex-shrink-0`}>{icon}</span>
+                        <span className={`${iconColor} font-mono text-xs mt-0.5 shrink-0`}>{icon}</span>
                         <p className="text-sm text-secondary-foreground leading-relaxed">{item}</p>
                     </div>
                 </ScrollReveal>
