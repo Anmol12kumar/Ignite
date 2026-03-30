@@ -134,6 +134,7 @@ export const challenges = [
     "Version sensitivity — the same prompt can produce different results across model versions.",
 ];
 
+// ─── Common Beginner Mistakes ───────────────────────────────────────────────
 export const beginnerMistakes = [
     'Being too vague — "Write something about marketing" gives the AI nothing specific to work with.',
     "Overloading a single prompt — cramming 5 tasks into one prompt when they should be separate.",

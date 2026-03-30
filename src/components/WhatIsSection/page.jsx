@@ -9,14 +9,14 @@ const WhatIsSection = () => (
             <div>
                 <SectionHeader tag="The Foundation" title="What is Prompt Engineering?" />
                 <ScrollReveal delay={200}>
-                    <p className="text-secondary-foreground leading-relaxed mb-5">
+                    <p className="text-secondary-foreground px-30 leading-relaxed mb-5">
                         Prompt engineering is the practice of designing and refining inputs — called prompts —
                         to get the best possible outputs from AI language models. It's the bridge between
                         human intent and machine understanding.
                     </p>
                 </ScrollReveal>
                 <ScrollReveal delay={300}>
-                    <p className="text-secondary-foreground leading-relaxed">
+                    <p className="text-secondary-foreground px-30 leading-relaxed">
                         Think of it as learning a new language — not a programming language, but
                         the language of clear, structured communication with AI systems. The better
                         your prompts, the more powerful, accurate, and useful the AI becomes.

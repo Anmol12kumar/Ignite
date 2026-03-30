@@ -14,7 +14,7 @@ const Login = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">
             {/* Ambient glow accent */}
-            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[260px] bg-emerald-500/30 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-105 h-65 bg-emerald-500/30 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
 
             <div className="relative z-10 w-full max-w-md px-6">
                 {/* Logo */}
@@ -66,7 +66,7 @@ const Login = () => {
                             size="lg"
                             className="w-full mt-2 bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-md"
                         >
-                            Log In
+                            Login
                         </Button>
                     </form>
 
