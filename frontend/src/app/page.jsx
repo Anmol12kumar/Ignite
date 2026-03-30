@@ -16,20 +16,20 @@ import ScrollReveal from "@/components/ScrollReveal/page";
 
 export default function Home() {
     return (
-    <main>
-        <Navbar />
-        <Hero />
-        <WhatIsSection />
-        <TechniquesSection />
-        <TypesOfPrompts />
-        <ApplicationsSection />
-        <BestPracticesSection />
-        <ChallengesSection />
-        <HowWeHelpSection />
-        <HistorySection />
-        <FutureSection />
-        <Footer />
-        <ScrollReveal />
-    </main>
+        <main>
+            <Navbar />
+            <Hero />
+            <WhatIsSection />
+            <TechniquesSection />
+            <TypesOfPrompts />
+            <ApplicationsSection />
+            <BestPracticesSection />
+            <ChallengesSection />
+            <HowWeHelpSection />
+            <HistorySection />
+            <FutureSection />
+            <Footer />
+            <ScrollReveal />
+        </main>
     );
 }
