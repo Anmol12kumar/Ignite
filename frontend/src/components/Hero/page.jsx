@@ -8,7 +8,7 @@ const Hero = () => (
         <div className="container px-30 relative z-10">
             <div className="max-w-2xl">
                 <ScrollReveal delay={100}>
-                    <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-primary mb-5 block">
+                    <span className="font-mono text-[13px] text-emerald-500 tracking-[0.25em] uppercase text-primary mb-5 block">
                         Learn Prompt Engineering — The Fun Way
                     </span>
                 </ScrollReveal>
@@ -22,7 +22,7 @@ const Hero = () => (
                 </ScrollReveal>
 
                 <ScrollReveal delay={350}>
-                    <p className="text-base sm:text-lg text-secondary-foreground max-w-lg mb-8 leading-relaxed">
+                    <p className="text-base text-gray-400 sm:text-lg text-secondary-foreground max-w-lg mb-8 leading-relaxed">
                         From zero to expert — learn every concept of prompt engineering
                         through interactive quizzes, real challenges, and a gamified
                         progression system. Log in, play, and level up.

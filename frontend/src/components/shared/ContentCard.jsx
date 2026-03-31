@@ -22,7 +22,7 @@ const ContentCard = ({
             >
                 {title}
             </h3>
-            <p className="text-sm text-secondary-foreground leading-relaxed">{description}</p>
+            <p className="text-m text-gray-400 text-secondary-foreground leading-relaxed">{description}</p>
         </div>
     </ScrollReveal>
 );

@@ -10,15 +10,15 @@ const TechniquesSection = () => (
             title="Techniques that actually work"
             description="These are the proven methods used by researchers and practitioners. Each technique unlocks a different capability of AI language models."
         />
-        <div className="grid md:grid-cols-2 gap-px rounded-lg overflow-hidden border border-border/40">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-px rounded-lg overflow-hidden border border-gray-700">
             {techniques.map((t, i) => (
                 <ScrollReveal key={t.number} delay={80 + i * 60}>
-                    <div className="bg-card border p-7 sm:p-8 hover:bg-secondary/30 transition-colors duration-300 6h-full">
-                        <span className="font-mono text-xs text-muted-foreground mb-4 block">{t.number}</span>
-                        <h3 className="text-base font-semibold mb-2 group-hover:text-primary transition-colors duration-200">
+                    <div className="bg-gray-800 border p-7 sm:p-8 hover:bg-gray-900 transition-colors group duration-300 h-full">
+                        <span className="font-mono text-xs text-gray-400 mb-4 block">{t.number}</span>
+                        <h3 className="text-base font-semibold mb-2 group-hover:text-emerald-400 transition-colors duration-200">
                             {t.title}
                         </h3>
-                        <p className="text-sm text-secondary-foreground leading-relaxed">{t.desc}</p>
+                        <p className="text-m text-gray-300 leading-relaxed">{t.desc}</p>
                     </div>
                 </ScrollReveal>
             ))}

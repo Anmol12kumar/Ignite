@@ -2,7 +2,7 @@
 import { useEffect, useRef, forwardRef } from "react";
 
 const ScrollReveal = forwardRef(
-    ({ children, className = "", delay = 0, direction = "up" }, _ref) => {
+    ({ children, className = "", delay = 0, direction = "up" }, ref) => {
         const innerRef = useRef(null);
 
         useEffect(() => {
@@ -31,7 +31,7 @@ const ScrollReveal = forwardRef(
         }, [delay, direction]);
 
         return (
-            <div ref={innerRef} className={`opacity-0 ${className}`}>
+            <div ref={ref || innerRef} className={`opacity-0 ${className}`}>
                 {children}
             </div>
         );

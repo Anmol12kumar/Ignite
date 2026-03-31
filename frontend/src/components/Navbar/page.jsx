@@ -3,35 +3,39 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 const Navbar = () => (
-    <nav className="fixed top-0 left-0 right-0 rounded-lg border border-gray-800 bg-gray-950/90 backdrop-blur-md">
-        <div className="container flex h-14 items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center px-30 gap-2">
-                <div className="h-6 w-6 rounded-md bg-emerald-500 flex items-center justify-center shadow-md">
-                    <span className="text-black font-bold text-m font-mono">I</span>
+    // Added z-50 to ensure it stays on top of all page content
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-800 bg-gray-950/90 backdrop-blur-md">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+            
+            {/* Logo - Removed px-30 which was blocking other elements */}
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="h-8 w-8 rounded-md bg-emerald-500 flex items-center justify-center shadow-md">
+                    <span className="text-black font-bold text-lg font-mono">I</span>
                 </div>
-                <span className="font-semibold tracking-tight text-white">Ignite</span>
+                <span className="font-bold tracking-tight text-white text-xl">Ignite</span>
             </Link>
 
-            {/* Nav links */}
-            <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
+            {/* Nav links - Centered or spaced correctly */}
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
                 {navLinks.map((l) => (
                     <Link
                         key={l.href}
                         href={l.href}
-                        className="hover:text-white transition-colors duration-200"
+                        className="hover:text-emerald-400 transition-colors duration-200"
                     >
                         {l.label}
                     </Link>
                 ))}
             </div>
 
-            {/* Login button */}
-            <Link href="/login" className="px-30">
-                <Button className="px-2 py-1 bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-lg">
-                    Log In
+            {/* Login button - Corrected nesting with asChild */}
+            <div className="flex items-center bg-emerald-500 shadow-lg">
+                <Button asChild className="bg-emerald-500 text-black shadow-lg">
+                    <Link href="/login">
+                        Log In
+                    </Link>
                 </Button>
-            </Link>
+            </div>
 
         </div>
     </nav>
