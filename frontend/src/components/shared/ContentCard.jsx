@@ -10,15 +10,12 @@ const ContentCard = ({
     direction = "up",
 }) => (
     <ScrollReveal delay={delay} direction={direction}>
-        <div
-            className={`p-6 rounded-lg border border-border/40 bg-card h-full group transition-colors duration-300 ${hoverBorder ? "hover:border-primary/30" : "hover:bg-secondary/40"
-                }`}
-        >
+        <div className="p-6 rounded-lg border border-gray-700 h-full group transition-colors duration-300 hover:bg-gray-800">
             {prefix && (
-                <span className="font-mono text-xs text-muted-foreground mb-4 block">{prefix}</span>
+                <span className="font-mono text-xs text-gray-400 mb-4 block">{prefix}</span>
             )}
             <h3
-                className={`font-semibold mb-2 group-hover:text-primary transition-colors duration-200 ${titleClassName}`}
+                className={`text-lg font-semibold mb-2 group-hover:text-emerald-400 transition-colors duration-200 ${titleClassName}`}
             >
                 {title}
             </h3>

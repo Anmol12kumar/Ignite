@@ -10,7 +10,7 @@ const ApplicationsSection = () => (
             title="Applications across industries"
             description="Prompt engineering isn't just for developers. It's transforming how professionals work across every field."
         />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid text-emerald-500 max-w-7xl mx-auto sm:grid-cols-2 md:grid-cols-3 gap-4">
             {applications.map((a, i) => (
                 <ContentCard
                     key={a.field}

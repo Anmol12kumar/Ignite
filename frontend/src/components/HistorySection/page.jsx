@@ -7,17 +7,17 @@ const HistorySection = () => (
     <Section maxWidth="max-w-3xl">
         <SectionHeader tag="Timeline" title="A brief history" />
         <div className="relative">
-            <div className="absolute left-1.75 top-2 bottom-2 w-px bg-border/60" />
+            <div className="absolute left-2 top-2 bottom-2 w-px bg-gray-700" />
             <div className="space-y-8">
                 {timeline.map((t, i) => (
                     <ScrollReveal key={t.year} delay={80 + i * 80}>
                         <div className="flex gap-6 relative">
-                            <div className="w-3.75 shrink-0 relative z-10 flex items-start justify-center pt-1.5">
-                                <div className="w-1.75 h-1.75 rounded-full bg-primary" />
+                            <div className="w-4 shrink-0 relative z-10 flex items-start justify-center pt-1.5">
+                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
                             </div>
                             <div>
-                                <span className="font-mono text-sm font-semibold text-primary">{t.year}</span>
-                                <p className="text-sm text-secondary-foreground leading-relaxed mt-1">{t.event}</p>
+                                <span className="font-mono text-m font-semibold text-emerald-500">{t.year}</span>
+                                <p className="text-base text-gray-300 leading-relaxed mt-1">{t.event}</p>
                             </div>
                         </div>
                     </ScrollReveal>

@@ -5,19 +5,19 @@ import Section from "@/components/shared/Section";
 const ListColumn = ({ tag, tagColor, title, icon, iconColor, items, direction = "up" }) => (
     <div>
         <ScrollReveal>
-            <span className={`font-mono text-[11px] tracking-[0.25em] uppercase ${tagColor} mb-4 block`}>
+            <span className={`font-mono text-[13px] tracking-[0.25em] uppercase ${tagColor} mb-4 block`}>
                 {tag}
             </span>
         </ScrollReveal>
         <ScrollReveal delay={100}>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-8">{title}</h2>
+            <h2 className="text-4xl font-bold tracking-tight mb-8">{title}</h2>
         </ScrollReveal>
-        <div className="space-y-3">
+        <div className="space-y-4">
             {items.map((item, i) => (
                 <ScrollReveal key={i} delay={120 + i * 60} direction={direction}>
-                    <div className="flex gap-3 p-4 rounded-lg border border-border/30 bg-card">
-                        <span className={`${iconColor} font-mono text-xs mt-0.5 shrink-0`}>{icon}</span>
-                        <p className="text-sm text-secondary-foreground leading-relaxed">{item}</p>
+                    <div className="flex gap-4 p-5 rounded-lg border border-gray-700 bg-gray-900">
+                        <span className={`${iconColor} font-mono text-lg mt-0.5 shrink-0`}>{icon}</span>
+                        <p className="text-m text-gray-300 leading-relaxed">{item}</p>
                     </div>
                 </ScrollReveal>
             ))}
@@ -28,20 +28,20 @@ const ListColumn = ({ tag, tagColor, title, icon, iconColor, items, direction = 
 const ChallengesSection = () => (
     <Section>
         <div className="grid lg:grid-cols-2 gap-16">
-            <ListColumn
+            <ListColumn 
                 tag="Be Aware"
-                tagColor="text-primary"
+                tagColor="text-emerald-500"
                 title="Challenges you'll face"
                 icon="✕"
-                iconColor="text-primary"
+                iconColor="text-emerald-500"
                 items={challenges}
             />
             <ListColumn
                 tag="Common Pitfalls"
-                tagColor="text-destructive"
+                tagColor="text-red-500"
                 title="Mistakes beginners make"
                 icon="!"
-                iconColor="text-destructive"
+                iconColor="text-red-500"
                 items={beginnerMistakes}
                 direction="left"
             />

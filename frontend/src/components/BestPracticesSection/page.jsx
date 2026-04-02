@@ -6,7 +6,7 @@ import SectionHeader from "@/components/shared/SectionHeader";
 const BestPracticesSection = () => (
     <Section>
         <SectionHeader tag="Playbook" title="Best practices" />
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="max-w-7xl mx-auto grid group-first hover:caret-gray-700 sm:grid-cols-2 gap-4">
             {bestPractices.map((p, i) => (
                 <ContentCard
                     key={p.rule}

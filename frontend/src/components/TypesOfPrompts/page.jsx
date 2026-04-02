@@ -10,7 +10,7 @@ const TypesOfPrompts = () => (
             title="Types of Prompts"
             description="Not all prompts are created equal. Understanding the different types helps you pick the right approach for every situation."
         />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid mx-auto max-w-7xl sm:grid-cols-2 gap-4">
             {promptTypes.map((t, i) => (
                 <ContentCard
                     key={t.title}
