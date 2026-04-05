@@ -2,6 +2,27 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+const signupSchema = Yup.object().shape({
+    name: Yup.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name can't exceed 50 characters")
+    .required("Name is required"),
+    email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+    password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Must contain an uppercase letter")
+    .matches(/[a-z]/, "Must contain a lowercase letter")
+    .matches(/[0-9]/, "Must contain a number")
+    .matches(/[@$!%*?&]/, "Must contain a special character")
+    .required("Password is required"),
+});
 
 const Signup = () => {
     const [name, setName] = useState("");
@@ -11,6 +32,25 @@ const Signup = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
     };
+
+    const signupForm = useFormik({
+        initialValues: { 
+            name: "",
+            email: "", 
+            password: "" 
+        },
+        onSubmit: async (values) => {
+            console.log("Form values:", values);
+
+            await axios.post("http://localhost:5000/user/add", values)
+            console.log(res.status);
+            if (res.status === 200) {
+                toast.success("Signup successful:", res.data);
+            } else {
+                toast.error("Signup failed:", res.data);
+            }
+    }, validationSchema: signupSchema
+});
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">

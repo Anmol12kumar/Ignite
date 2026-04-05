@@ -33,6 +33,20 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-15px)" },
+        },
+        pulseGlow: {
+          "0%, 100%": { opacity: 0.6, transform: "scale(1)" },
+          "50%": { opacity: 1, transform: "scale(1.05)" },
+        },
+      },
+      animation: {
+        float: "float 4s ease-in-out infinite",
+        pulseGlow: "pulseGlow 6s ease-in-out infinite",
+      },
     },
   },
   plugins: [],

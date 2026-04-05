@@ -1,16 +1,15 @@
 const mongoose = require('mongoose');
+const dns = require("node:dns/promises");
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
-require('dotenv').config();
-
-const url = process.env.MONGO_URL;
+const url = 'mongodb+srv://guptaanmolkumar37:anmol37kumar@cluster0.uznew9m.mongodb.net/?appName=Cluster0'
 
 mongoose.connect(url)
-
-    .then(() => {
-        console.log('Connected to MongoDB...!!');
-    })
-    .catch((error) => {
-        console.error('Error connecting to MongoDB...!!',error);
-    });
+.then((result) => {
+    console.log('database connected');
+})
+.catch((err) => {
+    console.log(err);
+});
 
 module.exports = mongoose;
