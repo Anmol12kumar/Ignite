@@ -1,0 +1,263 @@
+"use client";
+import { useState, useRef, useCallback } from "react";
+import { level1Questions } from "@/data/level1Questions";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+
+const Assessment = () => {
+    const [selectedQ, setSelectedQ] = useState(null);
+    const [userPrompt, setUserPrompt] = useState("");
+    const [feedback, setFeedback] = useState(null);
+    const [completedQs, setCompletedQs] = useState(new Set());
+    const [dividerPos, setDividerPos] = useState(40);
+    const containerRef = useRef(null);
+    const dragging = useRef(false);
+
+    const onMouseDown = useCallback((e) => {
+        e.preventDefault();
+        dragging.current = true;
+        const onMouseMove = (e) => {
+            if (!dragging.current || !containerRef.current) return;
+            const rect = containerRef.current.getBoundingClientRect();
+            const pct = ((e.clientX - rect.left) / rect.width) * 100;
+            setDividerPos(Math.min(70, Math.max(25, pct)));
+        };
+        const onMouseUp = () => {
+            dragging.current = false;
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    }, []);
+
+    const handleSubmit = () => {
+        if (!userPrompt.trim()) return;
+        const q = level1Questions.find((q) => q.id === selectedQ);
+        if (!q) return;
+
+        const promptLower = userPrompt.toLowerCase();
+        let score = 0;
+        const matched = [];
+        const missed = [];
+
+        q.keyPoints.forEach((point) => {
+            const keywords = point.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+            const hit = keywords.some((kw) => promptLower.includes(kw));
+            if (hit) { score++; matched.push(point); } else { missed.push(point); }
+        });
+
+        const pct = Math.round((score / q.keyPoints.length) * 100);
+        setFeedback({ pct, matched, missed, sampleAnswer: q.sampleAnswer });
+        setCompletedQs((prev) => new Set([...prev, selectedQ]));
+    };
+
+    const activeQuestion = level1Questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / level1Questions.length) * 100);
+    const isLastQuestion = selectedQ === level1Questions[level1Questions.length - 1].id;
+    const allCompleted = completedQs.size === level1Questions.length;
+
+    return (
+        <div className="h-screen flex flex-col bg-black text-white">
+            {/* Top bar */}
+            <nav className="flex-shrink-0 px-30 border-b border-gray-700 bg-black/80 backdrop-blur-xl z-50">
+                <div className="container flex h-14 items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Link href="/Challenges" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                            <span className="text-lg">←</span>
+                            <span className="text-sm hover:text-gray-500 font-medium">Back</span>
+                        </Link>
+                        <div className="h-5 w-px bg-gray-700/60" />
+                        <div className="flex items-center gap-2">
+                            <span className="text-lg">🚪</span>
+                            <span className="font-semibold tracking-tight">Level 1 — Gatekeeper</span>
+                        </div>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="flex items-center gap-3">
+                        <span className="font-mono text-xs text-gray-500">
+                            {completedQs.size}/{level1Questions.length} practiced
+                        </span>
+                        <div className="w-32 h-2 rounded-full bg-muted overflow-hidden">
+                            <div
+                                className="h-full rounded-full border-b-gray-600 bg-linear-to-r from-emerald-500 to-emerald-700 transition-all duration-500"
+                                style={{ width: `${completionPct}%` }}
+                            />
+                        </div>
+                        <span className="font-mono text-xs font-bold text-emerald-600">{completionPct}%</span>
+                    </div>
+                </div>
+            </nav>
+
+            {/* Split pane */}
+            <div ref={containerRef} className="flex-1 flex overflow-hidden relative select-none">
+                {/* Left panel — Questions */}
+                <div className="overflow-y-auto border-r-0" style={{ width: `${dividerPos}%` }}>
+                    <div className="p-6">
+                        <h2 className="font-mono text-[11px] tracking-[0.2em] uppercase text-emerald-400 mb-4">
+                            Practice Questions
+                        </h2>
+                        <div className="space-y-2">
+                            {level1Questions.map((q) => (
+                                <button
+                                    key={q.id}
+                                    onClick={() => { setSelectedQ(q.id); setUserPrompt(""); setFeedback(null); }}
+                                    className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${selectedQ === q.id
+                                            ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)]"
+                                            : "border-gray-700 bg-gray-900 hover:border-gray-600 hover:bg-gray-800"
+                                        }`}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <span 
+                                            className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-bold ${completedQs.has(q.id)
+                                                ? "bg-primary text-primary-foreground"
+                                                : selectedQ === q.id
+                                                    ? "bg-emerald-400 text-black"
+                                                    : "bg-gray-700 text-gray-400"
+                                            }`}>
+                                            {completedQs.has(q.id) ? "✓" : q.id}
+                                        </span>
+                                        <div>
+                                            <p className={`text-sm leading-relaxed ${selectedQ === q.id ? "text-white" : "text-gray-400"}`}>
+                                                {q.question}
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-2 italic">💡 {q.hint}</p>
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Draggable divider */}
+                <div
+                    onMouseDown={onMouseDown}
+                    className="w-2 flex-shrink-0 bg-gray-700/30 hover:bg-emerald-400/40 active:bg-emerald-400/60 cursor-col-resize transition-colors duration-150 relative z-10 flex items-center justify-center"
+                >
+                    <div className="w-1 h-10 rounded-full bg-gray-400/30" />
+                </div>
+
+                {/* Right panel — Answer area */}
+                <div className="flex-1 overflow-y-auto">
+                    {!activeQuestion ? (
+                        <div className="h-full flex items-center justify-center">
+                            <div className="text-center">
+                                <span className="text-5xl block mb-4">👈</span>
+                                <p className="text-gray-400 text-sm">Select a question to start practicing</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-6 max-w-2xl">
+                            {/* Question display */}
+                            <div className="mb-6">
+                                <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-emerald-400 mb-2 block">
+                                    Question {activeQuestion.id}
+                                </span>
+                                <h3 className="text-lg font-semibold mb-1 text-white">{activeQuestion.question}</h3>
+                            </div>
+
+                            {/* Sample answer (always visible) */}
+                            <div className="mb-6 rounded-xl border border-emerald-600
+                            bg-emerald-950/90 p-5">
+                                <h4 className="text-s font-mono uppercase tracking-wider text-emerald-600 mb-3 flex items-center gap-2">
+                                    📝 Sample Answer
+                                </h4>
+                                <pre className="text-sm text-gray-400 whitespace-pre-wrap font-mono leading-relaxed">
+                                    {activeQuestion.sampleAnswer}
+                                </pre>
+                                <div className="mt-4 pt-3 border-t border-primary/10">
+                                    <h5 className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-2">Key Points to Include:</h5>
+                                    <ul className="space-y-1">
+                                        {activeQuestion.keyPoints.map((point, i) => (
+                                            <li key={i} className="text-s text-gray-500 flex items-start gap-2">
+                                                <span className="text-emerald-600 mb-0.5">•</span> {point}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Prompt input */}
+                            <div className="mb-4">
+                                <label className="text-xs font-mono text-gray-400 mb-2 block uppercase tracking-wider">
+                                    Now Try It Yourself
+                                </label>
+                                <textarea
+                                    value={userPrompt}
+                                    onChange={(e) => { setUserPrompt(e.target.value); setFeedback(null); }}
+                                    placeholder="Write your own prompt based on the example above..."
+                                    rows={6}
+                                    className="w-full rounded-lg border border-gray-700 bg-gray-900 p-4 text-sm text-white placeholder:text-gray-400/50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/30 resize-none transition-all"
+                                />
+                            </div>
+
+                            <Button onClick={handleSubmit} variant="hero" size="lg" className="w-full mb-8 bg-emerald-400 text-black hover:bg-emerald-500 shadow-md hover:shadow-lg">
+                                Submit & Check Accuracy
+                            </Button>
+
+                            {/* Feedback */}
+                            {feedback && (
+                                <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className={`rounded-xl border p-5 ${feedback.pct >= 75 ? "border-emerald-400/40 bg-emerald-400/10"
+                                            : feedback.pct >= 50 ? "border-yellow-500/40 bg-yellow-500/10"
+                                                : "border-red-500/40 bg-red-500/10"
+                                        }`}>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="text-2xl">{feedback.pct >= 75 ? "🎯" : feedback.pct >= 50 ? "🔶" : "🔴"}</span>
+                                            <div>
+                                                <span className="text-2xl font-bold text-white">{feedback.pct}%</span>
+                                                <span className="text-sm text-gray-400 ml-2">accuracy</span>
+                                            </div>
+                                        </div>
+                                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                                            <div className={`h-full rounded-full transition-all duration-700 ${feedback.pct >= 75 ? "bg-emerald-400" : feedback.pct >= 50 ? "bg-yellow-500" : "bg-red-500"
+                                                }`} style={{ width: `${feedback.pct}%` }} />
+                                        </div>
+                                    </div>
+
+                                    {feedback.matched.length > 0 && (
+                                        <div>
+                                            <h4 className="text-xs font-mono uppercase tracking-wider text-emerald-400 mb-2">✓ What you got right</h4>
+                                            <ul className="space-y-1">
+                                                {feedback.matched.map((p, i) => (
+                                                    <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                                                        <span className="text-emerald-400 mt-0.5">✓</span> {p}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {feedback.missed.length > 0 && (
+                                        <div>
+                                            <h4 className="text-xs font-mono uppercase tracking-wider text-red-500 mb-2">✗ What to improve</h4>
+                                            <ul className="space-y-1">
+                                                {feedback.missed.map((p, i) => (
+                                                    <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                                                        <span className="text-red-500 mt-0.5">✗</span> {p}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Ready button on last question when all completed */}
+                                    {isLastQuestion && allCompleted && (
+                                        <Link to="/Challenges">
+                                            <Button size="lg" className="w-full mt-4 text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
+                                                🚀 Ready for the First Challenge
+                                            </Button>
+                                        </Link>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Assessment;
