@@ -30,7 +30,7 @@ const Navbar = () => (
 
             {/* Login button - Corrected nesting with asChild */}
             <div className="flex items-center bg-emerald-500 shadow-lg">
-                <Button asChild className="bg-emerald-500 text-black shadow-lg">
+                <Button  className="bg-emerald-500 text-black shadow-lg">
                     <Link href="/login">
                         Log In
                     </Link>
