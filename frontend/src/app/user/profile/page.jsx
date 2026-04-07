@@ -64,7 +64,7 @@ const Profile = () => {
                 {/* ── User Info ── */}
                 <section className="flex flex-col sm:flex-row sm:items-start gap-6">
                     <div className="h-20 w-20 rounded-full bg-emerald-400/15 border-2 border-emerald-400/40 flex">
-                        <span className="text-3xl font-bold items-center justify-center mx-auto text-emerald-400">
+                        <span className="text-3xl font-bold mt-4 items-center justify-center mx-auto text-emerald-400">
                             {mockUser.name.charAt(0)}
                         </span>
                     </div>
