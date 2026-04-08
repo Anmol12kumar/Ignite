@@ -1,15 +1,40 @@
 "use client";
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import axios from "axios";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 import Link from "next/link";
+import toast from "react-hot-toast";
+
+const loginSchema = Yup.object().shape({
+    email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+    password: Yup.string()
+        .min(8, "Password must be at least 8 characters")
+        .required("Password is required"),
+});
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    };
+    const loginForm = useFormik({
+        initialValues: {
+            email: "",
+            password: "",
+        },
+        validationSchema: loginSchema,
+        onSubmit: async (values) => {
+            try {
+                const res = await axios.post("http://localhost:5000/user/login", values);
+                if (res.status === 200) {
+                    toast.success("Login successful");
+                } else {
+                    toast.error("Login failed");
+                }
+            } catch (error) {
+                toast.error("Login failed: " + error.message);
+            }
+        },
+    });
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">
@@ -32,27 +57,36 @@ const Login = () => {
                         Log in to continue learning
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={loginForm.handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-200 mb-1.5">Email</label>
                             <input
                                 type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                id="email"
+                                name="email"
+                                value={loginForm.values.email}
+                                onChange={loginForm.handleChange}
                                 placeholder="you@example.com"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
+                            {loginForm.errors.email && loginForm.touched.email && (
+                                <p className="text-xs text-red-500 mt-1">{loginForm.errors.email}</p>
+                            )}
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-200 mb-1.5">Password</label>
                             <input
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                id="password"
+                                name="password"
+                                value={loginForm.values.password}
+                                onChange={loginForm.handleChange}
                                 placeholder="••••••••"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-                            />
+                            />{loginForm.errors.password && loginForm.touched.password && (
+                                <p className="text-xs text-red-500 mt-1">{loginForm.errors.password}</p>
+                            )}
                         </div>
 
                         <div className="flex justify-end">
@@ -62,6 +96,7 @@ const Login = () => {
                         </div>
 
                         <Button
+                            type="submit"
                             variant="hero"
                             size="lg"
                             className="w-full mt-2 bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-md"

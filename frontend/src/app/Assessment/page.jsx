@@ -48,8 +48,11 @@ const Assessment = () => {
         });
 
         const pct = Math.round((score / q.keyPoints.length) * 100);
-        setFeedback({ pct, matched, missed, sampleAnswer: q.sampleAnswer });
-        setCompletedQs((prev) => new Set([...prev, selectedQ]));
+        const passed = pct >= 80;
+        setFeedback({ pct, matched, missed, sampleAnswer: q.sampleAnswer, passed });
+        if (passed) {
+            setCompletedQs((prev) => new Set([...prev, selectedQ]));
+        }
     };
 
     const activeQuestion = level1Questions.find((q) => q.id === selectedQ);
@@ -98,34 +101,45 @@ const Assessment = () => {
                             Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {level1Questions.map((q) => (
-                                <button
-                                    key={q.id}
-                                    onClick={() => { setSelectedQ(q.id); setUserPrompt(""); setFeedback(null); }}
-                                    className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${selectedQ === q.id
-                                            ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)]"
-                                            : "border-gray-700 bg-gray-900 hover:border-gray-600 hover:bg-gray-800"
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-3">
-                                        <span 
-                                            className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-bold ${completedQs.has(q.id)
-                                                ? "bg-primary text-primary-foreground"
+                            {level1Questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(level1Questions[index - 1].id) || completedQs.has(q.id);
+                                return (
+                                    <button
+                                        key={q.id}
+                                        onClick={() => {
+                                            if (isUnlocked) {
+                                                setSelectedQ(q.id); setUserPrompt(""); setFeedback(null);
+                                            }
+                                        }}
+                                        disabled={!isUnlocked}
+                                        className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${!isUnlocked
+                                                ? "opacity-50 cursor-not-allowed border-gray-800 bg-gray-900/40"
                                                 : selectedQ === q.id
-                                                    ? "bg-emerald-400 text-black"
-                                                    : "bg-gray-700 text-gray-400"
-                                            }`}>
-                                            {completedQs.has(q.id) ? "✓" : q.id}
-                                        </span>
-                                        <div>
-                                            <p className={`text-sm leading-relaxed ${selectedQ === q.id ? "text-white" : "text-gray-400"}`}>
-                                                {q.question}
-                                            </p>
-                                            <p className="text-xs text-gray-400 mt-2 italic">💡 {q.hint}</p>
+                                                    ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)]"
+                                                    : "border-gray-700 bg-gray-900 hover:border-gray-600 hover:bg-gray-800"
+                                            }`}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <span
+                                                className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-bold ${!isUnlocked ? "bg-gray-800 text-gray-600" :
+                                                        completedQs.has(q.id)
+                                                            ? "bg-primary text-primary-foreground"
+                                                            : selectedQ === q.id
+                                                                ? "bg-emerald-400 text-black"
+                                                                : "bg-gray-700 text-gray-400"
+                                                    }`}>
+                                                {!isUnlocked ? '🔒' : completedQs.has(q.id) ? "✓" : q.id}
+                                            </span>
+                                            <div>
+                                                <p className={`text-sm leading-relaxed ${!isUnlocked ? "text-gray-600" : selectedQ === q.id ? "text-white" : "text-gray-400"}`}>
+                                                    {q.question}
+                                                </p>
+                                                <p className={`text-xs mt-2 italic ${!isUnlocked ? "text-gray-700" : "text-gray-400"}`}>💡 {q.hint}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </button>
-                            ))}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -200,8 +214,8 @@ const Assessment = () => {
                             {feedback && (
                                 <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
                                     <div className={`rounded-xl border p-5 ${feedback.pct >= 75 ? "border-emerald-400/40 bg-emerald-400/10"
-                                            : feedback.pct >= 50 ? "border-yellow-500/40 bg-yellow-500/10"
-                                                : "border-red-500/40 bg-red-500/10"
+                                        : feedback.pct >= 50 ? "border-yellow-500/40 bg-yellow-500/10"
+                                            : "border-red-500/40 bg-red-500/10"
                                         }`}>
                                         <div className="flex items-center gap-3 mb-2">
                                             <span className="text-2xl">{feedback.pct >= 75 ? "🎯" : feedback.pct >= 50 ? "🔶" : "🔴"}</span>
@@ -242,13 +256,45 @@ const Assessment = () => {
                                         </div>
                                     )}
 
-                                    {/* Ready button on last question when all completed */}
-                                    {isLastQuestion && allCompleted && (
-                                        <Link to="/Challenges">
-                                            <Button size="lg" className="w-full mt-4 text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
-                                                🚀 Ready for the First Challenge
+                                    {!feedback.passed && (
+                                        <div className="mt-6 p-4 rounded-lg bg-red-500/10 border border-red-500/40 text-center">
+                                            <p className="text-red-400 font-semibold mb-1">Score below 80%</p>
+                                            <p className="text-sm text-red-300">You missed some important keywords. Please review the missing points above and retry to unlock the next question!</p>
+                                        </div>
+                                    )}
+
+                                    {feedback.passed && !isLastQuestion && (
+                                        <div className="mt-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-center flex flex-col items-center">
+                                            <p className="text-emerald-400 font-semibold mb-1">Great job! (Score {feedback.pct}%)</p>
+                                            <p className="text-sm text-emerald-300 mb-4">You've successfully answered this question. You can now attempt the next question.</p>
+                                            <Button
+                                                onClick={() => {
+                                                    const currentIndex = level1Questions.findIndex(q => q.id === selectedQ);
+                                                    const nextQ = level1Questions[currentIndex + 1];
+                                                    if (nextQ) {
+                                                        setSelectedQ(nextQ.id);
+                                                        setUserPrompt("");
+                                                        setFeedback(null);
+                                                    }
+                                                }}
+                                                className="w-full bg-emerald-600 text-white hover:bg-emerald-500"
+                                            >
+                                                Next Question ➡️
                                             </Button>
-                                        </Link>
+                                        </div>
+                                    )}
+
+                                    {/* Ready button on last question when all completed */}
+                                    {isLastQuestion && allCompleted && feedback.passed && (
+                                        <div className="mt-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-center flex flex-col items-center">
+                                            <p className="text-emerald-400 font-semibold mb-1">Level Complete!</p>
+                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 1.</p>
+                                            <Link href="/Challenges" className="w-full">
+                                                <Button size="lg" className="w-full text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
+                                                    🚀 Ready for the First Challenge
+                                                </Button>
+                                            </Link>
+                                        </div>
                                     )}
                                 </div>
                             )}

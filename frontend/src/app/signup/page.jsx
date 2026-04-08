@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import * as Yup from "yup";
@@ -9,48 +8,46 @@ import toast from "react-hot-toast";
 
 const signupSchema = Yup.object().shape({
     name: Yup.string()
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name can't exceed 50 characters")
-    .required("Name is required"),
+        .min(2, "Name must be at least 2 characters")
+        .max(50, "Name can't exceed 50 characters")
+        .required("Name is required"),
     email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+        .email("Invalid email address")
+        .required("Email is required")
+        .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email must be a valid format"),
     password: Yup.string()
-    .min(8, "Password must be at least 8 characters")
-    .matches(/[A-Z]/, "Must contain an uppercase letter")
-    .matches(/[a-z]/, "Must contain a lowercase letter")
-    .matches(/[0-9]/, "Must contain a number")
-    .matches(/[@$!%*?&]/, "Must contain a special character")
-    .required("Password is required"),
+        .min(8, "Password must be at least 8 characters")
+        .matches(/[A-Z]/, "Must contain an uppercase letter")
+        .matches(/[a-z]/, "Must contain a lowercase letter")
+        .matches(/[0-9]/, "Must contain a number")
+        .matches(/[@$!%*?&]/, "Must contain a special character")
+        .required("Password is required"),
 });
 
 const Signup = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    };
 
     const signupForm = useFormik({
-        initialValues: { 
+        initialValues: {
             name: "",
-            email: "", 
-            password: "" 
+            email: "",
+            password: ""
         },
-        onSubmit: async (values) => {
-            console.log("Form values:", values);
-
-            await axios.post("http://localhost:5000/user/add", values)
-            console.log(res.status);
-            if (res.status === 200) {
-                toast.success("Signup successful:", res.data);
-            } else {
-                toast.error("Signup failed:", res.data);
+        validationSchema: signupSchema,
+            onSubmit: async (values) => {
+                console.log("Form values:", values);
+                
+                try {
+                    const res = await axios.post("http://localhost:5000/user/add", values);
+                    if (res.status === 200) {
+                        toast.success("Signup successful");
+                    } else {
+                        toast.error("Signup failed");
+                    }
+                } catch (error) {
+                    toast.error("Signup failed: " + error.message);
+                }
             }
-    }, validationSchema: signupSchema
-});
+    });
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">
@@ -73,13 +70,14 @@ const Signup = () => {
                         Start your prompt engineering journey
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={signupForm.handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-200 mb-1.5">Full Name</label>
                             <input
                                 type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                id="name"
+                                value={signupForm.values.name}
+                                onChange={signupForm.handleChange}
                                 placeholder="Your name"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
@@ -89,8 +87,9 @@ const Signup = () => {
                             <label className="block text-sm font-medium text-gray-200 mb-1.5">Email</label>
                             <input
                                 type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                id="email"
+                                value={signupForm.values.email}
+                                onChange={signupForm.handleChange}
                                 placeholder="you@example.com"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
@@ -100,14 +99,16 @@ const Signup = () => {
                             <label className="block text-sm font-medium text-gray-200 mb-1.5">Password</label>
                             <input
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                id="password"
+                                value={signupForm.values.password}
+                                onChange={signupForm.handleChange}
                                 placeholder="••••••••"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
                         </div>
 
                         <Button
+                            type="submit"
                             variant="hero"
                             size="lg"
                             className="w-full mt-2 bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-md"
