@@ -19,7 +19,7 @@ export const level1Questions = [
         "Create a prompt that makes the AI summarize any given paragraph into bullet points.",
     hint: "Think about using delimiters to separate the instruction from the content.",
     sampleAnswer:
-        'Summarize the following paragraph into concise bullet points. Each bullet should capture one key idea.\n\n"""\n[Paste paragraph here]\n"""',
+        'Summarize the following paragraph into concise bullet points. Each bullet should capture one key idea.\n\n"""\nWhile it sounds like a modern buzzword, the concept actually dates back to 1982, when students at Carnegie Mellon University modified a Coca-Cola machine so they could check remotely if the drinks were stocked and cold.\n"""',
     keyPoints: [
         "Uses delimiters (triple quotes) to separate content",
         "Specifies output format: bullet points",

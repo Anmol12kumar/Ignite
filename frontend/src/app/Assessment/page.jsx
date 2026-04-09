@@ -48,7 +48,7 @@ const Assessment = () => {
         });
 
         const pct = Math.round((score / q.keyPoints.length) * 100);
-        const passed = pct >= 80;
+        const passed = pct >= 60;
         setFeedback({ pct, matched, missed, sampleAnswer: q.sampleAnswer, passed });
         if (passed) {
             setCompletedQs((prev) => new Set([...prev, selectedQ]));
@@ -289,7 +289,7 @@ const Assessment = () => {
                                         <div className="mt-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-center flex flex-col items-center">
                                             <p className="text-emerald-400 font-semibold mb-1">Level Complete!</p>
                                             <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 1.</p>
-                                            <Link href="/Challenges" className="w-full">
+                                            <Link href="/challenge" className="w-full">
                                                 <Button size="lg" className="w-full text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
                                                     🚀 Ready for the First Challenge
                                                 </Button>

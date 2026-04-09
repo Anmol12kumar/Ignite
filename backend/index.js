@@ -1,4 +1,5 @@
 const cors = require("cors"); //Cross-Origin Resource Sharing middleware
+require("./connection"); // Import the database connection
 const userRouter = require("./router/userRouter"); // Importing the user router module
 const testGEMINI = require("./router/testGEMINI"); // Importing the testGEMINI module to test the Gemini API
 
