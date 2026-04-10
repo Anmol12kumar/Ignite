@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const loginSchema = Yup.object().shape({
     email: Yup.string()
@@ -16,6 +17,9 @@ const loginSchema = Yup.object().shape({
 });
 
 const Login = () => {
+
+    const router = useRouter();
+
     const loginForm = useFormik({
         initialValues: {
             email: "",
@@ -27,6 +31,9 @@ const Login = () => {
                 const res = await axios.post("http://localhost:5000/user/login", values);
                 if (res.status === 200) {
                     toast.success("Login successful");
+                    router.push("/Challenges");
+                    const {token} = res.data;
+                    localStorage.setItem("token", token);
                 } else {
                     toast.error("Login failed");
                 }

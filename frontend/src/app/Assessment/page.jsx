@@ -10,8 +10,8 @@ const Assessment = () => {
     const [feedback, setFeedback] = useState(null);
     const [completedQs, setCompletedQs] = useState(new Set());
     const [dividerPos, setDividerPos] = useState(40);
+    const [isEvaluating, setIsEvaluating] = useState(false);
     const containerRef = useRef(null);
-    const dragging = useRef(false);
 
     const onMouseDown = useCallback((e) => {
         e.preventDefault();
@@ -31,27 +31,98 @@ const Assessment = () => {
         window.addEventListener("mouseup", onMouseUp);
     }, []);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
         const q = level1Questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
-        const promptLower = userPrompt.toLowerCase();
-        let score = 0;
-        const matched = [];
-        const missed = [];
+        setIsEvaluating(true);
+        setFeedback(null);
 
-        q.keyPoints.forEach((point) => {
-            const keywords = point.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
-            const hit = keywords.some((kw) => promptLower.includes(kw));
-            if (hit) { score++; matched.push(point); } else { missed.push(point); }
-        });
+        const evaluateWithRetry = async (retries = 3) => {
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout per attempt
+                    
+                    const res = await fetch("http://localhost:5000/evaluate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            userPrompt,
+                            question: q.question,
+                            sampleAnswer: q.sampleAnswer,
+                            keyPoints: q.keyPoints,
+                            token: localStorage.getItem("token")
+                        }),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeout);
 
-        const pct = Math.round((score / q.keyPoints.length) * 100);
-        const passed = pct >= 60;
-        setFeedback({ pct, matched, missed, sampleAnswer: q.sampleAnswer, passed });
-        if (passed) {
-            setCompletedQs((prev) => new Set([...prev, selectedQ]));
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        console.error(`Attempt ${attempt}: Server returned ${res.status}:`, errorText);
+                        if (res.status === 503 && attempt < retries) {
+                            const delay = Math.pow(2, attempt) * 1000;
+                            console.log(`Retrying in ${delay}ms...`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue;
+                        }
+                        throw new Error(`API Error ${res.status}: ${errorText}`);
+                    }
+                    
+                    return await res.json();
+                } catch (err) {
+                    if (attempt < retries && (err.name === 'AbortError' || err.message.includes('503'))) {
+                        const delay = Math.pow(2, attempt) * 1000;
+                        console.log(`Attempt ${attempt} failed, retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        throw err;
+                    }
+                }
+            }
+        };
+
+        try {
+            const data = await evaluateWithRetry();
+            const pct = data.pct;
+            const passed = pct >= 75;
+            
+            setFeedback({
+                pct,
+                matched: data.matched || [],
+                missed: data.missed || [],
+                suggestions: data.suggestions,
+                sampleAnswer: q.sampleAnswer,
+                passed
+            });
+            
+            if (passed) {
+                setCompletedQs((prev) => new Set([...prev, selectedQ]));
+            }
+        } catch (err) {
+            console.error("Evaluation error, falling back to basic matching:", err);
+            const promptLower = userPrompt.toLowerCase();
+            let score = 0;
+            const matched = [];
+            const missed = [];
+
+            q.keyPoints.forEach((point) => {
+                const keywords = point.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+                const hit = keywords.some((kw) => promptLower.includes(kw));
+                if (hit) { score++; matched.push(point); } else { missed.push(point); }
+            });
+
+            const pct = Math.round((score / q.keyPoints.length) * 100);
+            const passed = pct >= 75;
+            setFeedback({ pct, matched, missed, sampleAnswer: q.sampleAnswer, passed });
+            if (passed) {
+                setCompletedQs((prev) => new Set([...prev, selectedQ]));
+            }
+        } finally {
+            setIsEvaluating(false);
         }
     };
 
@@ -206,8 +277,8 @@ const Assessment = () => {
                                 />
                             </div>
 
-                            <Button onClick={handleSubmit} variant="hero" size="lg" className="w-full mb-8 bg-emerald-400 text-black hover:bg-emerald-500 shadow-md hover:shadow-lg">
-                                Submit & Check Accuracy
+                            <Button disabled={isEvaluating} onClick={handleSubmit} variant="hero" size="lg" className="w-full mb-8 bg-emerald-400 text-black hover:bg-emerald-500 shadow-md hover:shadow-lg disabled:opacity-75">
+                                {isEvaluating ? "Analyzing with AI..." : "Submit & Check Accuracy"}
                             </Button>
 
                             {/* Feedback */}
@@ -253,6 +324,13 @@ const Assessment = () => {
                                                     </li>
                                                 ))}
                                             </ul>
+                                        </div>
+                                    )}
+
+                                    {feedback.suggestions && (
+                                        <div className="mt-4 p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/40">
+                                            <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400 mb-2 flex items-center gap-2">✨ AI Suggestions</h4>
+                                            <p className="text-sm text-indigo-200 leading-relaxed">{feedback.suggestions}</p>
                                         </div>
                                     )}
 
