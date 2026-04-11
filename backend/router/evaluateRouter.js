@@ -12,7 +12,6 @@ router.post('/', async (req, res) => {
     try {
         const { userPrompt, question, sampleAnswer, keyPoints, token } = req.body;
 
-        // Utilizing the proven lite tier flag to bypass massive 429 rate limit queues
         const model = genAI.getGenerativeModel({ model: "gemini-flash-lite-latest" });
         
         const prompt = `You are an AI assistant evaluating an assessment for a "prompt engineering" course.

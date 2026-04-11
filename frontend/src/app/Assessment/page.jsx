@@ -43,24 +43,23 @@ const Assessment = () => {
             for (let attempt = 1; attempt <= retries; attempt++) {
                 try {
                     const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout per attempt
+                    const timeout = setTimeout(() => controller.abort(new Error("Request timeout after 30s")), 30000); // 30s timeout per attempt
                     
-                    const res = await fetch("http://localhost:5000/evaluate", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            userPrompt,
-                            question: q.question,
-                            sampleAnswer: q.sampleAnswer,
-                            keyPoints: q.keyPoints,
-                            token: localStorage.getItem("token")
-                        }),
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeout);
-
-                    if (!res.ok) {
+                    try {
+                        const res = await fetch("http://localhost:5000/evaluate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                userPrompt,
+                                question: q.question,
+                                sampleAnswer: q.sampleAnswer,
+                                keyPoints: q.keyPoints,
+                                token: localStorage.getItem("token")
+                            }),
+                            signal: controller.signal
+                        });
+                        
+                        if (!res.ok) {
                         const errorText = await res.text();
                         console.error(`Attempt ${attempt}: Server returned ${res.status}:`, errorText);
                         if (res.status === 503 && attempt < retries) {
@@ -72,11 +71,14 @@ const Assessment = () => {
                         throw new Error(`API Error ${res.status}: ${errorText}`);
                     }
                     
-                    return await res.json();
+                        return await res.json();
+                    } finally {
+                        clearTimeout(timeout);
+                    }
                 } catch (err) {
-                    if (attempt < retries && (err.name === 'AbortError' || err.message.includes('503'))) {
+                    if (attempt < retries && (err.name === 'AbortError' || err.message.includes('503') || err.message.includes('timeout'))) {
                         const delay = Math.pow(2, attempt) * 1000;
-                        console.log(`Attempt ${attempt} failed, retrying in ${delay}ms...`);
+                        console.warn(`Attempt ${attempt} failed: ${err.message}. Retrying in ${delay}ms...`);
                         await new Promise(resolve => setTimeout(resolve, delay));
                     } else {
                         throw err;
@@ -103,7 +105,7 @@ const Assessment = () => {
                 setCompletedQs((prev) => new Set([...prev, selectedQ]));
             }
         } catch (err) {
-            console.error("Evaluation error, falling back to basic matching:", err);
+            console.warn("Evaluation error, falling back to basic matching:", err.message);
             const promptLower = userPrompt.toLowerCase();
             let score = 0;
             const matched = [];
