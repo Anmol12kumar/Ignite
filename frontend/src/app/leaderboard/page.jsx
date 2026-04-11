@@ -39,7 +39,7 @@ const PodiumCard = ({ player, place }) => {
                 <p className="font-semibold text-foreground text-sm">{player.name}</p>
                 <p className="font-mono-code text-xs text-primary">{player.xp.toLocaleString()} XP</p>
             </div>
-            <div className={`${heights[place]} w-28 sm:w-36 rounded-t-xl bg-gradient-to-t from-card to-secondary flex flex-col items-center justify-end pb-4 border border-border/60`}>
+            <div className={`${heights[place]} w-28 sm:w-36 rounded-t-xl bg-linear-to-t from-card to-secondary flex flex-col items-center justify-end pb-4 border border-border/60`}>
                 <span className="text-3xl">{medals[place]}</span>
                 <span className="font-mono-code text-xs text-muted-foreground mt-1">Lvl {player.level}</span>
             </div>

@@ -19,11 +19,11 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => (
     <div
         className={`relative rounded-xl border p-6 flex flex-col items-center text-center gap-3 transition-all duration-300 ${boss
                 ? unlocked
-                    ? "border-destructive/50 bg-destructive/5 hover:border-destructive hover:shadow-[0_0_30px_-8px_hsl(0,72%,51%,0.3)] cursor-pointer"
-                    : "border-border/20 bg-card/40 opacity-50 cursor-not-allowed"
+                    ? "border-red-500/50 bg-red-900/10 hover:border-red-500 hover:shadow-[0_0_20px_rgba(239,68,68,0.4)] cursor-pointer group"
+                    : "border-gray-700 bg-gray-900/40 opacity-50 cursor-not-allowed"
                 : unlocked
-                    ? "border-primary/40 bg-card hover:border-primary hover:shadow-[0_0_30px_-8px_hsl(162,55%,42%,0.25)] cursor-pointer group"
-                    : "border-border/20 bg-card/40 opacity-50 cursor-not-allowed"
+                    ? "border-emerald-400/40 bg-gray-900 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] cursor-pointer group"
+                    : "border-gary-700 bg-gary-900/40 opacity-50 cursor-not-allowed"
             }`}
     >
         {/* Lock overlay */}
@@ -36,10 +36,10 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => (
         {/* Level badge */}
         <span
             className={`font-mono text-[10px] tracking-[0.2em] uppercase px-3 py-1 rounded-full ${boss
-                    ? "bg-destructive/10 text-destructive"
+                    ? "bg-red-900/20 text-red-500"
                     : unlocked
-                        ? "bg-primary/10 text-primary"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-emerald-900/20 text-emerald-400"
+                        : "bg-gray-800 text-gray-400"
                 }`}
         >
             {boss ? "Boss Level" : `Level ${level}`}
@@ -50,7 +50,9 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => (
 
         {/* Name */}
         <h3
-            className={`font-semibold text-sm leading-tight ${!unlocked ? "blur-[1px] text-muted-foreground" : "text-foreground group-hover:text-primary transition-colors"
+            className={`font-semibold text-sm leading-tight ${!unlocked 
+                ? "blur-[1px] text-gary-400" 
+                : "text-white group-hover:text-emerald-400 transition-colors"
                 }`}
         >
             {name}
@@ -58,26 +60,26 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => (
 
         {/* Status */}
         {unlocked ? (
-            <span className="text-[11px] font-mono text-primary mt-1">▶ Start</span>
+            <span className="text-[11px] font-mono text-emerald-400 font-bold mt-1">▶ Start</span>
         ) : (
-            <span className="text-[11px] font-mono text-muted-foreground mt-1 blur-[1px]">Locked</span>
+            <span className="text-[11px] font-mono text-gray-400 mt-1 blur-[1px]">Locked</span>
         )}
     </div>
 );
 
 const Challenges = () => (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
         {/* Top bar */}
-        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-            <div className="container flex h-14 items-center justify-between">
+        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-700 bg-black/80 backdrop-blur-xl">
+            <div className="container px-20 flex h-14 items-center justify-between">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-md bg-primary flex items-center justify-center">
+                    <div className="h-7 w-7 bg-emerald-600 rounded-md bg-primary flex items-center justify-center">
                         <span className="text-primary-foreground font-bold text-xs font-mono">I</span>
                     </div>
-                    <span className="font-semibold tracking-tight text-foreground">Ignite</span>
+                    <span className="font-semibold tracking-tight text-white">Ignite</span>
                 </Link>
-                <Link href="/profile">
-                    <Button variant="ghost" size="sm">Profile</Button>
+                <Link href="/user/profile/page">
+                    <Button className="px-3 py-1 text-sm rounded-lg bg-transparent text-gray-300 hover:bg-bg-gray-800">Profile</Button>
                 </Link>
             </div>
         </nav>
@@ -85,26 +87,26 @@ const Challenges = () => (
         <main className="container pt-28 pb-20">
             {/* Header */}
             <div className="text-center mb-14">
-                <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-primary mb-3 block">
+                <span className="font-mono text-[13px] tracking-[0.25em] uppercase text-emerald-400 mb-3 block">
                     Challenge Arena
                 </span>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
                     Master the Art of Prompting
                 </h1>
-                <p className="text-secondary-foreground max-w-xl mx-auto text-sm sm:text-base">
+                <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base">
                     Complete each challenge to unlock the next. Conquer all levels to face the Boss.
                 </p>
             </div>
 
             {/* Progress bar */}
             <div className="max-w-md mx-auto mb-14">
-                <div className="flex justify-between text-xs font-mono text-muted-foreground mb-2">
+                <div className="flex justify-between text-xs font-mono text-emerald-400 mb-2">
                     <span>Progress</span>
                     <span>1 / 11</span>
                 </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div className="h-2 rounded-full bg-gray-800 overflow-hidden">
                     <div
-                        className="h-full rounded-full bg-primary transition-all duration-500"
+                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.6)] transition-all duration-500"
                         style={{ width: `${(1 / 11) * 100}%` }}
                     />
                 </div>
@@ -118,7 +120,7 @@ const Challenges = () => (
             </div>
 
             {/* Boss card */}
-            <div className="max-w-sm mx-auto mt-10">
+            <div className="max-w-sm mx-auto mt-14">
                 {levels.filter((l) => l.boss).map((l) => (
                     <LevelCard key="boss" {...l} />
                 ))}
