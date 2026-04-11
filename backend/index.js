@@ -1,6 +1,8 @@
 const cors = require("cors"); //Cross-Origin Resource Sharing middleware
+require("./connection"); // Import the database connection
 const userRouter = require("./router/userRouter"); // Importing the user router module
-const testGEMINI = require("./router/testGEMINI"); // Importing the testGEMINI module to test the Gemini API
+const evaluateRouter = require("./router/evaluateRouter"); // Importing the evaluate Router module
+// const testGEMINI = require("./router/testGEMINI"); // Importing the testGEMINI module to test the Gemini API
 
 const express = require("express");
 
@@ -18,6 +20,7 @@ app.use(
 // Middleware to parse JSON request bodies
 app.use(express.json());
 app.use('/user', userRouter); // Mounting the userRouter on the '/user' path
+app.use('/evaluate', evaluateRouter); // Mounting the evaluateRouter on the '/evaluate' path
 
 app.get("/", (req, res) => {
     res.send("response from express");

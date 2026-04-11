@@ -15,7 +15,8 @@ const levels = [
     { level: "Boss", name: "Smart Kitchen Showdown", icon: "🔥", unlocked: false, boss: true },
 ];
 
-const LevelCard = ({ level, name, icon, unlocked, boss }) => (
+const LevelCard = ({ level, name, icon, unlocked, boss }) => {
+    const cardContent = (
     <div
         className={`relative rounded-xl border p-6 flex flex-col items-center text-center gap-3 transition-all duration-300 ${boss
                 ? unlocked
@@ -51,7 +52,7 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => (
         {/* Name */}
         <h3
             className={`font-semibold text-sm leading-tight ${!unlocked 
-                ? "blur-[1px] text-gary-400" 
+                ? "blur-[1px] text-gray-400" 
                 : "text-white group-hover:text-emerald-400 transition-colors"
                 }`}
         >
@@ -67,6 +68,13 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => (
     </div>
 );
 
+if(unlocked && level === 1){
+    return <Link href = "/Assessment">{cardContent}</Link>
+}
+
+return cardContent;
+};
+
 const Challenges = () => (
     <div className="min-h-screen bg-black">
         {/* Top bar */}
@@ -78,7 +86,7 @@ const Challenges = () => (
                     </div>
                     <span className="font-semibold tracking-tight text-white">Ignite</span>
                 </Link>
-                <Link href="/user/profile/page">
+                <Link href="/user/profile">
                     <Button className="px-3 py-1 text-sm rounded-lg bg-transparent text-gray-300 hover:bg-bg-gray-800">Profile</Button>
                 </Link>
             </div>
