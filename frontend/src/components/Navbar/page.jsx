@@ -32,7 +32,7 @@ const Navbar = () => (
             <div className="flex items-center bg-emerald-500 shadow-lg">
  
                 
-                <Button className="bg-emerald-500 text-black shadow-lg">bee4bc242c8d911b48fe17b921230
+                <Button className="bg-emerald-500 text-black shadow-lg">
                     <Link href="/login">
                         Log In
                     </Link>
