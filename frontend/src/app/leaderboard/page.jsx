@@ -1,14 +1,16 @@
+"use client";
 import Navbar from "@/components/Navbar/page";
 import Footer from "@/components/Footer/page";
 import ScrollReveal from "@/components/ScrollReveal/page";
+import { useState, useEffect } from "react";
 
-const topPlayers = [
+const initialTopPlayers = [
     { rank: 2, name: "CipherMind", avatar: "CM", xp: 8420, level: 14, badges: 9, streak: 12 },
     { rank: 1, name: "PromptLord", avatar: "PL", xp: 12850, level: 18, badges: 14, streak: 21 },
     { rank: 3, name: "NeuralNinja", avatar: "NN", xp: 7190, level: 12, badges: 7, streak: 8 },
 ];
 
-const restPlayers = [
+const initialRestPlayers = [
     { rank: 4, name: "ByteWhisperer", avatar: "BW", xp: 6300, level: 11, badges: 6, streak: 5 },
     { rank: 5, name: "LogicWeaver", avatar: "LW", xp: 5780, level: 10, badges: 5, streak: 9 },
     { rank: 6, name: "DataDruid", avatar: "DD", xp: 5100, level: 9, badges: 5, streak: 3 },
@@ -18,7 +20,7 @@ const restPlayers = [
     { rank: 10, name: "PromptPilot", avatar: "PP", xp: 3400, level: 7, badges: 3, streak: 2 },
 ];
 
-const podiumOrder = [topPlayers[0], topPlayers[1], topPlayers[2]]; // 2nd, 1st, 3rd
+const initialPodiumOrder = [initialTopPlayers[0], initialTopPlayers[1], initialTopPlayers[2]]; // 2nd, 1st, 3rd
 
 const PodiumCard = ({ player, place }) => {
     const heights = { 1: "h-44", 2: "h-36", 3: "h-28" };
@@ -47,7 +49,27 @@ const PodiumCard = ({ player, place }) => {
     );
 };
 
-const Leaderboard = () => (
+const Leaderboard = () => {
+    const [players, setPlayers] = useState(initialRestPlayers);
+    const [top, setTop] = useState(initialTopPlayers);
+    const [podium, setPodium] = useState(initialPodiumOrder);
+
+    useEffect(() => {
+        const userXP = parseInt(localStorage.getItem("userXP"));
+        if (!isNaN(userXP)) {
+            const you = { rank: 0, name: "You", avatar: "👤", xp: userXP, level: Math.floor(userXP/1000) + 1, badges: 3, streak: 2 };
+            const all = [...initialTopPlayers, ...initialRestPlayers, you];
+            all.sort((a, b) => b.xp - a.xp);
+            all.forEach((p, i) => p.rank = i + 1);
+            
+            const newTop = [all[0], all[1], all[2]];
+            setTop(newTop);
+            setPodium([newTop[1], newTop[0], newTop[2]]); // 2nd, 1st, 3rd
+            setPlayers(all.slice(3));
+        }
+    }, []);
+
+    return (
     <div className="min-h-screen">
         <Navbar />
 
@@ -70,7 +92,7 @@ const Leaderboard = () => (
             {/* Podium */}
             <ScrollReveal delay={150}>
                 <div className="flex items-end justify-center gap-4 sm:gap-8 mb-16">
-                    {podiumOrder.map((p) => (
+                    {podium.map((p) => (
                         <PodiumCard key={p.rank} player={p} place={p.rank} />
                     ))}
                 </div>
@@ -90,18 +112,17 @@ const Leaderboard = () => (
                     </div>
 
                     {/* Rows */}
-                    {restPlayers.map((p, i) => (
+                    {players.map((p, i) => (
                         <div
                             key={p.rank}
-                            className={`grid grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem] sm:grid-cols-[4rem_1fr_6rem_5rem_5rem_5rem] px-4 py-3 items-center text-sm transition-colors hover:bg-secondary/50 ${i !== restPlayers.length - 1 ? "border-b border-border/30" : ""
-                                }`}
+                            className={`grid grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem] sm:grid-cols-[4rem_1fr_6rem_5rem_5rem_5rem] px-4 py-3 items-center text-sm transition-colors hover:bg-secondary/50 ${i !== players.length - 1 ? "border-b border-border/30" : ""} ${p.name === "You" ? "bg-emerald-900/20" : ""}`}
                         >
                             <span className="font-mono-code text-muted-foreground">{p.rank}</span>
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-secondary border border-border/60 flex items-center justify-center text-xs font-mono-code text-foreground">
+                                <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-mono-code ${p.name === "You" ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" : "bg-secondary border-border/60 text-foreground"}`}>
                                     {p.avatar}
                                 </div>
-                                <span className="font-medium text-foreground">{p.name}</span>
+                                <span className={`font-medium ${p.name === "You" ? "text-emerald-400 font-bold" : "text-foreground"}`}>{p.name}</span>
                             </div>
                             <span className="text-right font-mono-code text-primary text-xs">{p.xp.toLocaleString()}</span>
                             <span className="text-right text-muted-foreground text-xs">{p.level}</span>
@@ -117,6 +138,7 @@ const Leaderboard = () => (
 
         <Footer />
     </div>
-);
+    );
+};
 
 export default Leaderboard;

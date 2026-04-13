@@ -175,7 +175,7 @@ const Assessment = () => {
                         </h2>
                         <div className="space-y-2">
                             {level1Questions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(level1Questions[index - 1].id) || completedQs.has(q.id);
+                                const isUnlocked = true;
                                 return (
                                     <button
                                         key={q.id}
