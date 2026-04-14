@@ -1,12 +1,13 @@
-const { Schema, model } = require("../connection");
+const { Schema, model, Types } = require("../connection");
 
 const mySchema = new Schema(
     {
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        type: Schema.Types.ObjectId,
+        ref: "users",
         required: true,
     },
+    name: { type: String },
     totalXP: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
     challengesCompleted: { type: Number, default: 0 },

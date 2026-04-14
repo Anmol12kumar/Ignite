@@ -55,18 +55,49 @@ const Leaderboard = () => {
     const [podium, setPodium] = useState(initialPodiumOrder);
 
     useEffect(() => {
-        const userXP = parseInt(localStorage.getItem("userXP"));
-        if (!isNaN(userXP)) {
-            const you = { rank: 0, name: "You", avatar: "👤", xp: userXP, level: Math.floor(userXP/1000) + 1, badges: 3, streak: 2 };
-            const all = [...initialTopPlayers, ...initialRestPlayers, you];
-            all.sort((a, b) => b.xp - a.xp);
-            all.forEach((p, i) => p.rank = i + 1);
-            
-            const newTop = [all[0], all[1], all[2]];
-            setTop(newTop);
-            setPodium([newTop[1], newTop[0], newTop[2]]); // 2nd, 1st, 3rd
-            setPlayers(all.slice(3));
-        }
+        const fetchRankings = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/leaderboard");
+                const data = await res.json();
+                
+                if (data && data.length > 0) {
+                    // Map backend model to frontend UI structure
+                    const formatted = data.map((p, i) => ({
+                        rank: i + 1,
+                        name: p.name || "Anonymous",
+                        avatar: p.name ? p.name.charAt(0).toUpperCase() : "👤",
+                        xp: p.totalXP,
+                        level: p.level,
+                        badges: Math.floor(p.totalXP / 2000), 
+                        streak: p.bestStreak || 0
+                    }));
+
+                    const newTop = formatted.slice(0, 3);
+                    setTop(newTop);
+                    setPodium([newTop[1] || newTop[0], newTop[0], newTop[2] || newTop[0]].filter(Boolean));
+                    setPlayers(formatted.slice(3));
+                    return;
+                }
+            } catch (err) {
+                console.error("Failed to fetch leaderboard:", err);
+            }
+
+            // Fallback to local storage if API fails or is empty
+            const userXP = parseInt(localStorage.getItem("userXP"));
+            if (!isNaN(userXP)) {
+                const you = { rank: 0, name: "You", avatar: "👤", xp: userXP, level: Math.floor(userXP/1000) + 1, badges: 3, streak: 2 };
+                const all = [...initialTopPlayers, ...initialRestPlayers, you];
+                all.sort((a, b) => b.xp - a.xp);
+                all.forEach((p, i) => p.rank = i + 1);
+                
+                const newTop = [all[0], all[1], all[2]];
+                setTop(newTop);
+                setPodium([newTop[1], newTop[0], newTop[2]]);
+                setPlayers(all.slice(3));
+            }
+        };
+
+        fetchRankings();
     }, []);
 
     return (

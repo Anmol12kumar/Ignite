@@ -23,8 +23,22 @@ const ChallengeResults = () => {
             const vals = Object.values(parsed);
             if (vals.length > 0) {
                 const overall = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
-                const baselineXp = parseInt(localStorage.getItem("userXP") || "3000"); // Base baseline 
-                localStorage.setItem("userXP", String(baselineXp + overall * 10)); // Reward cumulative XP
+                const earnedXP = overall * 10;
+
+                const baselineXp = parseInt(localStorage.getItem("userXP") || "0"); 
+                localStorage.setItem("userXP", String(baselineXp + earnedXP));
+
+                const token = localStorage.getItem("token");
+                if (token) {
+                    fetch("http://localhost:5000/leaderboard/update", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ token, xpToAdd: earnedXP })
+                    })
+                    .then(res => res.json())
+                    .then(data => console.log("Leaderboard updated:", data))
+                    .catch(err => console.error("Leaderboard sync failed:", err));
+                }
             }
         }
     }, []);
@@ -172,7 +186,7 @@ const ChallengeResults = () => {
                                 </Button>
                             </Link>
                         )}
-                        <Link href="/challenges" className="flex-1">
+                        <Link href="/Challenges" className="flex-1">
                             <Button 
                             variant="outline" 
                             className="w-full border border-gray-700 text-gray-400 hover:text-white hover:border-gray-800">

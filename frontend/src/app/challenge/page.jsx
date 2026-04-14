@@ -48,7 +48,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
             )}
             {!isLast && score >= 50 && (
                 <Button className="mt-4 w-full bg-emerald-500 text-black font-semibold hover:bg-emerald-600" onClick={onNext}>
-                    Unlock Next Question →
+                    Next Question →
                 </Button>
             )}
             {isLast && score >= 50 && (

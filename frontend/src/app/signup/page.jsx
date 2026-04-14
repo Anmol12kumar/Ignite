@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const signupSchema = Yup.object().shape({
     name: Yup.string()
@@ -25,6 +26,7 @@ const signupSchema = Yup.object().shape({
 });
 
 const Signup = () => {
+    const router = useRouter();
 
     const signupForm = useFormik({
         initialValues: {
@@ -40,6 +42,7 @@ const Signup = () => {
                     const res = await axios.post("http://localhost:5000/user/add", values);
                     if (res.status === 200) {
                         toast.success("Signup successful");
+                        router.push("/login");
                     } else {
                         toast.error("Signup failed");
                     }
@@ -76,11 +79,15 @@ const Signup = () => {
                             <input
                                 type="text"
                                 id="name"
+                                name="name"
                                 value={signupForm.values.name}
                                 onChange={signupForm.handleChange}
                                 placeholder="Your name"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
+                            {signupForm.errors.name && signupForm.touched.name && (
+                                <p className="text-xs text-red-500 mt-1">{signupForm.errors.name}</p>
+                            )}
                         </div>
 
                         <div>
@@ -88,11 +95,15 @@ const Signup = () => {
                             <input
                                 type="email"
                                 id="email"
+                                name="email"
                                 value={signupForm.values.email}
                                 onChange={signupForm.handleChange}
                                 placeholder="you@example.com"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
+                            {signupForm.errors.email && signupForm.touched.email && (
+                                <p className="text-xs text-red-500 mt-1">{signupForm.errors.email}</p>
+                            )}
                         </div>
 
                         <div>
@@ -100,11 +111,15 @@ const Signup = () => {
                             <input
                                 type="password"
                                 id="password"
+                                name="password"
                                 value={signupForm.values.password}
                                 onChange={signupForm.handleChange}
                                 placeholder="••••••••"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             />
+                            {signupForm.errors.password && signupForm.touched.password && (
+                                <p className="text-xs text-red-500 mt-1">{signupForm.errors.password}</p>
+                            )}
                         </div>
 
                         <Button
