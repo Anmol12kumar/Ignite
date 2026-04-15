@@ -22,8 +22,9 @@ router.post("/login", (req, res) => {
     const { email, password } = req.body;
 
     User.findOne({ email, password })
-    .then((result) => {
+    .then(async (result) => {
         if (result) {
+<<<<<<< HEAD
             const { _id, email, role } = result; // Role yahan se nikalenge
 
             jwt.sign(
@@ -39,6 +40,49 @@ router.post("/login", (req, res) => {
                     }
                 }
             );
+=======
+        const { _id, email, lastActiveDate } = result;
+
+        // --- STREAK LOGIC ---
+        const now = new Date();
+        const last = new Date(lastActiveDate || 0);
+
+        // Reset hours/minutes to compare just the calendar day
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+        
+        const diffDays = Math.floor((today - lastDay) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+            // Logged in the very next day
+            result.streak += 1;
+        } else if (diffDays > 1) {
+            // Missed a day (or more)
+            result.streak = 1;
+        } else if (diffDays === 0 && result.streak === 0) {
+            // First time ever or after a long break where it was 0
+            result.streak = 1;
+        }
+        // If diffDays === 0, keep current streak (same day login)
+
+        result.lastActiveDate = now;
+        await result.save();
+        // --- END STREAK LOGIC ---
+
+        jwt.sign(
+            { _id, email },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" },
+            (err, token) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json(err);
+            } else {
+                res.status(200).json({ token, user: result });
+            }
+            },
+        );
+>>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
         } else {
             res.status(401).json({ error: "Invalid credentials" });
         }

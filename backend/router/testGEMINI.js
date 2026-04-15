@@ -6,13 +6,13 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 async function testGEMINI() {
     try {
-        const model = genAI.getGenerativeModel({model:"gemini-flash-lite-latest"});
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const prompt = "Explain MERN stack in one sentence.";
         const result = await model.generateContent(prompt);
         const response = await result.response;
         console.log("Gemini Response:", response.text());
     } catch (error) {
-        console.log("Error:",error.message);
+        console.log("Error:", error.message);
     }
 }
 

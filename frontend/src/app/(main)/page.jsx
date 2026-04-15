@@ -1,5 +1,4 @@
 "use client";
-
 import Navbar from "@/components/Navbar/page";
 import Hero from "@/components/Hero/page";
 import WhatIsSection from "@/components/WhatIsSection/page";

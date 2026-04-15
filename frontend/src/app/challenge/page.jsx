@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { level1ChallengeQuestions } from "@/data/level1challengequestions";
 import { useParams } from "next/navigation";
@@ -48,13 +48,13 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
             )}
             {!isLast && score >= 50 && (
                 <Button className="mt-4 w-full bg-emerald-500 text-black font-semibold hover:bg-emerald-600" onClick={onNext}>
-                    Unlock Next Question →
+                    Next Question →
                 </Button>
             )}
             {isLast && score >= 50 && (
-                <Link href="/challenges">
+                <Link href="/challengeResults">
                     <Button className="mt-4 w-full bg-emerald-500 text-black font-semibold hover:bg-emerald-600">
-                        🎉 Challenge Complete — Back to Levels
+                        🎉 Challenge Complete — Go to results
                     </Button>
                 </Link>
             )}
@@ -64,12 +64,18 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
 
 const Challenge = () => {
     const { level } = useParams();
-    const [unlockedUpTo, setUnlockedUpTo] = useState(0); // index
+    const [unlockedUpTo, setUnlockedUpTo] = useState(100); // index
     const [activeQ, setActiveQ] = useState(0);
     const [userPrompt, setUserPrompt] = useState("");
     const [scores, setScores] = useState({}); // { qIndex: score }
     const [evaluations, setEvaluations] = useState({}); // { qIndex: suggestions_string }
     const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (Object.keys(scores).length > 0) {
+            localStorage.setItem("challengeScores", JSON.stringify(scores));
+        }
+    }, [scores]);
 
     const questions = level1ChallengeQuestions;
 
@@ -77,22 +83,56 @@ const Challenge = () => {
         setSubmitting(true);
         const q = questions[activeQ];
         
-        try {
-            const res = await fetch("http://localhost:5000/evaluate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userPrompt,
-                    question: q.question,
-                    sampleAnswer: q.sampleAnswer || "",
-                    keyPoints: q.keyPoints,
-                    token: localStorage.getItem("token")
-                })
-            });
+        const evaluateWithRetry = async (retries = 3) => {
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(new Error("Request timeout after 30s")), 30000);
+                    
+                    try {
+                        const res = await fetch("http://localhost:5000/evaluate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                userPrompt,
+                                question: q.question,
+                                sampleAnswer: q.sampleAnswer || "",
+                                keyPoints: q.keyPoints,
+                                token: localStorage.getItem("token")
+                            }),
+                            signal: controller.signal
+                        });
 
-            if (!res.ok) throw new Error("API Evaluation failed");
-            
-            const data = await res.json();
+                        if (!res.ok) {
+                            const errorText = await res.text();
+                            console.error(`Attempt ${attempt}: Server returned ${res.status}:`, errorText);
+                            if (res.status === 503 && attempt < retries) {
+                                const delay = Math.pow(2, attempt) * 1000;
+                                console.log(`Retrying in ${delay}ms...`);
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                continue;
+                            }
+                            throw new Error(`API Error ${res.status}: ${errorText}`);
+                        }
+                        
+                        return await res.json();
+                    } finally {
+                        clearTimeout(timeout);
+                    }
+                } catch (err) {
+                    if (attempt < retries && (err.name === 'AbortError' || err.message.includes('503') || err.message.includes('timeout'))) {
+                        const delay = Math.pow(2, attempt) * 1000;
+                        console.warn(`Attempt ${attempt} failed: ${err.message}. Retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        throw err;
+                    }
+                }
+            }
+        };
+
+        try {
+            const data = await evaluateWithRetry();
             const pct = data.pct;
             
             setScores((prev) => ({ ...prev, [activeQ]: pct }));
@@ -102,7 +142,7 @@ const Challenge = () => {
                 setUnlockedUpTo(activeQ + 1);
             }
         } catch (err) {
-            console.error("Evaluation error, falling back to basic matching:", err);
+            console.warn("Evaluation error, falling back to basic matching:", err.message);
             const promptLower = userPrompt.toLowerCase();
             let score = 0;
             q.keyPoints.forEach((point) => {
