@@ -186,20 +186,20 @@ const Assessment = () => {
                                         }}
                                         disabled={!isUnlocked}
                                         className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${!isUnlocked
-                                                ? "opacity-50 cursor-not-allowed border-gray-800 bg-gray-900/40"
-                                                : selectedQ === q.id
-                                                    ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)]"
-                                                    : "border-gray-700 bg-gray-900 hover:border-gray-600 hover:bg-gray-800"
+                                            ? "opacity-50 cursor-not-allowed border-gray-800 bg-gray-900/40"
+                                            : selectedQ === q.id
+                                                ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)]"
+                                                : "border-gray-700 bg-gray-900 hover:border-gray-600 hover:bg-gray-800"
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <span
                                                 className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-bold ${!isUnlocked ? "bg-gray-800 text-gray-600" :
-                                                        completedQs.has(q.id)
-                                                            ? "bg-primary text-primary-foreground"
-                                                            : selectedQ === q.id
-                                                                ? "bg-emerald-400 text-black"
-                                                                : "bg-gray-700 text-gray-400"
+                                                    completedQs.has(q.id)
+                                                        ? "bg-primary text-primary-foreground"
+                                                        : selectedQ === q.id
+                                                            ? "bg-emerald-400 text-black"
+                                                            : "bg-gray-700 text-gray-400"
                                                     }`}>
                                                 {!isUnlocked ? '🔒' : completedQs.has(q.id) ? "✓" : q.id}
                                             </span>

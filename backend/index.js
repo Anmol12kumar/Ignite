@@ -2,7 +2,11 @@ const cors = require("cors");
 require("./connection");
 const userRouter = require("./router/userRouter");
 const evaluateRouter = require("./router/evaluateRouter");
+
+const User = require("./models/userModel"); // 1. User Model ko import karein
+
 const leaderboardRouter = require("./router/leaderboardRouter");
+
 
 const express = require("express");
 const app = express();
