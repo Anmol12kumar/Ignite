@@ -17,7 +17,6 @@ const loginSchema = Yup.object().shape({
 });
 
 const Login = () => {
-
     const router = useRouter();
 
     const loginForm = useFormik({
@@ -29,16 +28,29 @@ const Login = () => {
         onSubmit: async (values) => {
             try {
                 const res = await axios.post("http://localhost:5000/user/login", values);
+                
                 if (res.status === 200) {
                     toast.success("Login successful");
-                    router.push("/Challenges");
-                    const {token} = res.data;
+
+                    // 1. Backend se Token, Role aur User Data nikalna
+                    const { token, role } = res.data;
+
+                    // 2. LocalStorage mein values store karna
                     localStorage.setItem("token", token);
-                } else {
-                    toast.error("Login failed");
+                    localStorage.setItem("role", role); // UI logic ke liye (Admin vs User)
+                    localStorage.setItem("userEmail", values.email); // isAdmin middleware ke headers ke liye
+
+                    // 3. Role ke basis par redirection
+                    if (role === "admin") {
+                        router.push("/admin-dashboard"); // Agar admin page alag hai
+                    } else {
+                        router.push("/Challenges");
+                    }
                 }
             } catch (error) {
-                toast.error("Login failed: " + error.message);
+                // Backend se aane wala specific error message dikhayein
+                const errorMsg = error.response?.data?.message || "Login failed";
+                toast.error(errorMsg);
             }
         },
     });
@@ -91,7 +103,8 @@ const Login = () => {
                                 onChange={loginForm.handleChange}
                                 placeholder="••••••••"
                                 className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-                            />{loginForm.errors.password && loginForm.touched.password && (
+                            />
+                            {loginForm.errors.password && loginForm.touched.password && (
                                 <p className="text-xs text-red-500 mt-1">{loginForm.errors.password}</p>
                             )}
                         </div>

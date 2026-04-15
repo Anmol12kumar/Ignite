@@ -1,50 +1,46 @@
-const cors = require("cors"); //Cross-Origin Resource Sharing middleware
-require("./connection"); // Import the database connection
-const userRouter = require("./router/userRouter"); // Importing the user router module
-const evaluateRouter = require("./router/evaluateRouter"); // Importing the evaluate Router module
-// const testGEMINI = require("./router/testGEMINI"); // Importing the testGEMINI module to test the Gemini API
-
+const cors = require("cors");
+require("./connection");
+const userRouter = require("./router/userRouter");
+const evaluateRouter = require("./router/evaluateRouter");
+const User = require("./models/userModel"); // 1. User Model ko import karein
 const express = require("express");
-
-const app = express(); // Creating an instance of the express application
-
-const PORT = 5000; // Defining the port number for the server to listen on
+const app = express();
+const PORT = 5000;
 
 app.use(
     cors({
-    // Enabling CORS for all routes
-    origin: "http://localhost:3000", // Allowing requests from any origin
+        origin: "http://localhost:3000",
     })
 );
-
-// Middleware to parse JSON request bodies
 app.use(express.json());
-app.use('/user', userRouter); // Mounting the userRouter on the '/user' path
-app.use('/evaluate', evaluateRouter); // Mounting the evaluateRouter on the '/evaluate' path
+
+// --- ADMIN CHECK MIDDLEWARE ---
+// Ye function check karega ki request bhejne wala admin hai ya nahi
+const isAdmin = async (req, res, next) => {
+    const { email } = req.headers; // Hum header se email bhejenge check karne ke liye
+    
+    const user = await User.findOne({ email: email });
+    
+    if (user && user.role === "admin") {
+        next(); // Agar admin hai toh aage badhne do
+    } else {
+        res.status(403).send("Access Denied: Sirf Admin hi badlav (Update/Delete) kar sakta hai!");
+    }
+};
+app.use('/user', userRouter);
+app.use('/evaluate', evaluateRouter);
 
 app.get("/", (req, res) => {
     res.send("response from express");
 });
-
-app.get('/add', (req, res) => {
-    res.send('response from add');
+// 2. Ab 'isAdmin' ko delete aur update routes mein add kar dein
+app.delete('/delete', isAdmin, (req, res) => {
+    res.send('Admin ne delete request allow kar di!');
 });
-
-app.get('/getall', (req, res) => {
-    res.send('response from getall');
+app.put('/update', isAdmin, (req, res) => {
+    res.send('Admin ne update request allow kar di!');
 });
-
-app.delete('/delete', (req, res) => {
-    res.send('response from delete');
-});
-
-app.put('/update', (req, res) => {
-    res.send('response from update');
-});
-
 app.listen(PORT, () => {
-  // Starting the server and listening on the defined port
-  console.log("Server is running on port -" + PORT); // Logging a message to indicate the server is running
+    console.log("Server is running on port -" + PORT);
 });
-
-module.exports = app; // Exporting the app instance for use in other files
+module.exports = app;
