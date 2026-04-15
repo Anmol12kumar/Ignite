@@ -3,16 +3,16 @@ import Link from "next/link";
 
 const levels = [
     { level: 1, name: "Gatekeeper", icon: "🚪", unlocked: true },
-    { level: 2, name: "Librarian", icon: "📚", locked: true },
-    { level: 3, name: "Translator's Cave", icon: "🗺️", locked: true },
-    { level: 4, name: "Teacher's Challenge", icon: "🎓", locked: true },
-    { level: 5, name: "Creative Prompt Crafter", icon: "🎨", locked: true },
-    { level: 6, name: "Multi-Step Prompt Master", icon: "⚡", locked: true },
-    { level: 7, name: "IoT Collaboration Challenge", icon: "🔗", locked: true },
-    { level: 8, name: "Music Remix Challenge", icon: "🎵", locked: true },
-    { level: 9, name: "Puzzle Prompt Challenge", icon: "🧩", locked: true },
-    { level: 10, name: "Ultimate Combo Challenge", icon: "🏆", locked: true },
-    { level: "Boss", name: "Smart Kitchen Showdown", icon: "🔥", locked: true, boss: true },
+    { level: 2, name: "Librarian", icon: "📚", unlocked: false },
+    { level: 3, name: "Translator's Cave", icon: "🗺️", unlocked: false },
+    { level: 4, name: "Teacher's Challenge", icon: "🎓", unlocked: false },
+    { level: 5, name: "Creative Prompt Crafter", icon: "🎨", unlocked: false },
+    { level: 6, name: "Multi-Step Prompt Master", icon: "⚡", unlocked: false },
+    { level: 7, name: "IoT Collaboration Challenge", icon: "🔗", unlocked: false },
+    { level: 8, name: "Music Remix Challenge", icon: "🎵", unlocked: false },
+    { level: 9, name: "Puzzle Prompt Challenge", icon: "🧩", unlocked: false },
+    { level: 10, name: "Ultimate Combo Challenge", icon: "🏆", unlocked: false },
+    { level: "Boss", name: "Smart Kitchen Showdown", icon: "🔥", unlocked: false, boss: true },
 ];
 
 const LevelCard = ({ level, name, icon, unlocked, boss }) => {
