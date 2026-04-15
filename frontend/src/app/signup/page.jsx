@@ -5,11 +5,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import axios from "axios";
 import toast from "react-hot-toast";
-<<<<<<< HEAD
 import { useRouter } from "next/navigation"; // Router import kiya
-=======
-import { useRouter } from "next/navigation";
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
 
 const signupSchema = Yup.object().shape({
     name: Yup.string()
@@ -29,11 +25,7 @@ const signupSchema = Yup.object().shape({
 });
 
 const Signup = () => {
-<<<<<<< HEAD
     const router = useRouter(); // Router initialize kiya
-=======
-    const router = useRouter();
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
 
     const signupForm = useFormik({
         initialValues: {
@@ -42,28 +34,12 @@ const Signup = () => {
             password: ""
         },
         validationSchema: signupSchema,
-<<<<<<< HEAD
         onSubmit: async (values) => {
             try {
                 const res = await axios.post("http://localhost:5000/user/add", values);
                 if (res.status === 200) {
                     toast.success("Signup successful! Please login.");
                     router.push("/login"); // Login page par bheja
-=======
-            onSubmit: async (values) => {
-                console.log("Form values:", values);
-                
-                try {
-                    const res = await axios.post("http://localhost:5000/user/add", values);
-                    if (res.status === 200) {
-                        toast.success("Signup successful");
-                        router.push("/login");
-                    } else {
-                        toast.error("Signup failed");
-                    }
-                } catch (error) {
-                    toast.error("Signup failed: " + error.message);
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
                 }
             } catch (error) {
                 const errorMsg = error.response?.data?.message || error.message;
@@ -97,11 +73,7 @@ const Signup = () => {
                             <input
                                 type="text"
                                 id="name"
-<<<<<<< HEAD
                                 name="name" // name attribute zaroori hai
-=======
-                                name="name"
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
                                 value={signupForm.values.name}
                                 onChange={signupForm.handleChange}
                                 onBlur={signupForm.handleBlur}
@@ -109,11 +81,7 @@ const Signup = () => {
                                 className={`w-full h-10 px-3 rounded-md border ${signupForm.errors.name && signupForm.touched.name ? 'border-red-500' : 'border-gray-700'} bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all`}
                             />
                             {signupForm.errors.name && signupForm.touched.name && (
-<<<<<<< HEAD
                                 <p className="text-[10px] text-red-500 mt-1">{signupForm.errors.name}</p>
-=======
-                                <p className="text-xs text-red-500 mt-1">{signupForm.errors.name}</p>
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
                             )}
                         </div>
 
@@ -131,11 +99,7 @@ const Signup = () => {
                                 className={`w-full h-10 px-3 rounded-md border ${signupForm.errors.email && signupForm.touched.email ? 'border-red-500' : 'border-gray-700'} bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all`}
                             />
                             {signupForm.errors.email && signupForm.touched.email && (
-<<<<<<< HEAD
                                 <p className="text-[10px] text-red-500 mt-1">{signupForm.errors.email}</p>
-=======
-                                <p className="text-xs text-red-500 mt-1">{signupForm.errors.email}</p>
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
                             )}
                         </div>
 
@@ -153,11 +117,7 @@ const Signup = () => {
                                 className={`w-full h-10 px-3 rounded-md border ${signupForm.errors.password && signupForm.touched.password ? 'border-red-500' : 'border-gray-700'} bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all`}
                             />
                             {signupForm.errors.password && signupForm.touched.password && (
-<<<<<<< HEAD
                                 <p className="text-[10px] text-red-500 mt-1">{signupForm.errors.password}</p>
-=======
-                                <p className="text-xs text-red-500 mt-1">{signupForm.errors.password}</p>
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
                             )}
                         </div>
 

@@ -24,23 +24,6 @@ router.post("/login", (req, res) => {
     User.findOne({ email, password })
     .then(async (result) => {
         if (result) {
-<<<<<<< HEAD
-            const { _id, email, role } = result; // Role yahan se nikalenge
-
-            jwt.sign(
-                { _id, email, role }, // Payload mein role add kiya
-                process.env.JWT_SECRET,
-                { expiresIn: "2h" },
-                (err, token) => {
-                    if (err) {
-                        res.status(500).json(err);
-                    } else {
-                        // Frontend ko token ke saath role bhi bhej rahe hain
-                        res.status(200).json({ token, role, email });
-                    }
-                }
-            );
-=======
         const { _id, email, lastActiveDate } = result;
 
         // --- STREAK LOGIC ---
@@ -82,7 +65,6 @@ router.post("/login", (req, res) => {
             }
             },
         );
->>>>>>> 8324a786df1c0e537daeccb65dcfbb6a3a04e050
         } else {
             res.status(401).json({ error: "Invalid credentials" });
         }
