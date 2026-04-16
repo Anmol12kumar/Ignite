@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar/page";
 
 const CommunityWall = () => {
@@ -7,21 +7,58 @@ const CommunityWall = () => {
     const [newMessage, setNewMessage] = useState("");
     const [authorName, setAuthorName] = useState("");
     const [copiedId, setCopiedId] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const wallRef = useRef(null);
 
-    const handleSend = () => {
-        if (!newMessage.trim()) return;
-        const newMsg = {
-            id: Date.now(),
-            content: newMessage,
-            author_name: authorName || "Anonymous",
-            likes: 0,
-            dislikes: 0,
-            created_at: new Date().toISOString(),
+    // Fetch messages on component mount and set up auto-refresh
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/communitywall");
+                if (!res.ok) throw new Error("Failed to fetch messages");
+                const data = await res.json();
+                setMessages(data);
+            } catch (err) {
+                console.error("Error fetching messages:", err);
+            } finally {
+                setLoading(false);
+            }
         };
-        setMessages([newMsg, ...messages]);
-        setNewMessage("");
+        
+        // Fetch immediately on mount
+        fetchMessages();
+        
+        // Set up auto-refresh every 5 seconds
+        const interval = setInterval(() => {
+            fetchMessages();
+        }, 5000);
+        
+        // Cleanup: clear interval when component unmounts
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleSend = async () => {
+        if (!newMessage.trim()) return;
+        
+        try {
+            const res = await fetch("http://localhost:5000/communitywall/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    author_name: authorName || "Anonymous",
+                    content: newMessage,
+                    userId: null,
+                })
+            });
+            
+            if (!res.ok) throw new Error("Failed to send message");
+            const savedMessage = await res.json();
+            setMessages([savedMessage, ...messages]);
+            setNewMessage("");
+        } catch (err) {
+            console.error("Error sending message:", err);
+            alert("Failed to send message. Please try again.");
+        }
     };
 
     const handleKeyDown = (e) => {
@@ -32,11 +69,31 @@ const CommunityWall = () => {
     };
 
     const handleLike = async (msg) => {
-            setMessages(messages.map(m => m.id === msg.id ? { ...m, likes: m.likes + 1 } : m));
+        try {
+            const res = await fetch(`http://localhost:5000/communitywall/like/${msg._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" }
+            });
+            if (!res.ok) throw new Error("Failed to like");
+            const updated = await res.json();
+            setMessages(messages.map(m => m._id === msg._id ? updated : m));
+        } catch (err) {
+            console.error("Error liking message:", err);
+        }
     };
 
     const handleDislike = async (msg) => {
-        setMessages(messages.map(m => m.id === msg.id ? { ...m, dislikes: m.dislikes + 1 } : m));
+        try {
+            const res = await fetch(`http://localhost:5000/communitywall/dislike/${msg._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" }
+            });
+            if (!res.ok) throw new Error("Failed to dislike");
+            const updated = await res.json();
+            setMessages(messages.map(m => m._id === msg._id ? updated : m));
+        } catch (err) {
+            console.error("Error disliking message:", err);
+        }
     };
 
     const handleCopy = (content, id) => {
@@ -131,7 +188,7 @@ const CommunityWall = () => {
                         <div className="columns-1 md:columns-2 gap-4 space-y-4">
                             {messages.map((msg) => (
                                 <div
-                                    key={msg.id}
+                                    key={msg._id}
                                     className="break-inside-avoid group relative bg-gray-900/80 backdrop-blur-sm border border-gray-700/60 rounded-xl p-4 transition-all duration-300 hover:border-emerald-400/40 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.15)]"
                                 >
                                     {/* Author row */}
@@ -145,10 +202,10 @@ const CommunityWall = () => {
                                         </div>
                                         {/* Copy button */}
                                         <button
-                                            onClick={() => handleCopy(msg.content, msg.id)}
+                                            onClick={() => handleCopy(msg.content, msg._id)}
                                             className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-md text-[10px] font-medium bg-secondary text-gray-400 hover:bg-gray-800 hover:bg-emerald-500 hover:text-white"
                                         >
-                                            {copiedId === msg.id ? "✓ Copied" : "Copy"}
+                                            {copiedId === msg._id ? "✓ Copied" : "Copy"}
                                         </button>
                                     </div>
 

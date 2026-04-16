@@ -99,6 +99,19 @@ router.get("/getbytoken", (req, res) => {
     }
 });
 
+router.get("/getbyid/:id", (req, res) => {
+    const { id } = req.params;
+    User.findById(id)
+    .then(user => {
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json(user);
+    })
+    .catch(err => {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch user", error: err });
+    });
+});
+
 router.delete("/delete/:id", (req, res) => {
     User.findByIdAndDelete(req.params.id)
     .then((result) => {

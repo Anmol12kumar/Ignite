@@ -2,6 +2,7 @@ const cors = require("cors");
 require("./connection");
 const userRouter = require("./router/userRouter");
 const evaluateRouter = require("./router/evaluateRouter");
+const communityWallRouter = require("./router/communityWallRouter");
 
 const User = require("./models/userModel"); // 1. User Model ko import karein
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/user', userRouter);
 app.use('/evaluate', evaluateRouter);
 app.use('/leaderboard', leaderboardRouter);
+app.use('/communitywall', communityWallRouter);
 
 app.get("/", (req, res) => {
     res.send("response from express");
