@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal/page";
 
 const Hero = () => (
@@ -31,9 +32,11 @@ const Hero = () => (
 
                     <ScrollReveal delay={500}>
                         <div className="flex flex-wrap gap-3">
-                            <Button variant="hero" size="lg">
-                                Start Playing Free
-                            </Button>
+                            <Link href="/signup">
+                                <Button variant="hero" size="lg">
+                                    Start Playing Free
+                                </Button>
+                            </Link>
                             <Button variant="heroOutline" size="lg">
                                 Explore Concepts
                             </Button>

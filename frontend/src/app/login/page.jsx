@@ -43,7 +43,31 @@ const Login = () => {
                     localStorage.setItem("role", role);
                     localStorage.setItem("userEmail", values.email);
 
-                    // 3. Role ke basis par sahi path par bhejna
+                    // 3. Fetch user progress from backend
+                    try {
+                        const base64Url = token.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const decoded = JSON.parse(atob(base64));
+                        const userId = decoded._id;
+
+                        const progressRes = await axios.get(`http://localhost:5000/user/progress/${userId}`);
+                        if (progressRes.status === 200) {
+                            const { highestUnlockedLevel, xp, level } = progressRes.data;
+                            // Save progress to localStorage to sync with frontend
+                            localStorage.setItem("highestUnlockedLevel", String(highestUnlockedLevel));
+                            localStorage.setItem("userXP", String(xp));
+                            localStorage.setItem("userLevel", String(level));
+                            console.log("Progress loaded from database:", { highestUnlockedLevel, xp, level });
+                        }
+                    } catch (err) {
+                        console.warn("Failed to fetch user progress:", err);
+                        // Fallback to defaults if fetch fails
+                        localStorage.setItem("highestUnlockedLevel", "1");
+                        localStorage.setItem("userXP", "0");
+                        localStorage.setItem("userLevel", "1");
+                    }
+
+                    // 4. Role ke basis par sahi path par bhejna
                     if (role === "admin") {
                         router.push("/admin/dashboard"); // Updated Path
                     } else {

@@ -28,11 +28,26 @@ const ChallengeResults = () => {
                 
                 if (overall >= 75) {
                     const currentHighest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
-                    const currentLevelNum = parseInt(level, 10) || 1; // e.g. "1" to 1
+                    const currentLevelNum = parseInt(level, 10) || 1;
                     
                     if (currentLevelNum >= currentHighest) {
-                        localStorage.setItem("highestUnlockedLevel", String(currentLevelNum + 1));
-                        toast.success("Congratulations! Next Level Unlocked! 🎉", { duration: 4000 });
+                        const nextLevel = currentLevelNum + 1;
+                        localStorage.setItem("highestUnlockedLevel", String(nextLevel));
+                        toast.success(`🎉 Level ${nextLevel} Unlocked! Ready for the next challenge?`, { duration: 4000 });
+                        
+                        // Save unlocked level to backend
+                        const token = localStorage.getItem("token");
+                        if (token) {
+                            fetch("http://localhost:5000/user/unlock-level", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ token, levelNumber: nextLevel })
+                            })
+                            .then(res => res.json())
+                            .then(data => console.log("Level unlocked saved to database:", data))
+                            .catch(err => console.error("Failed to save level unlock:", err));
+                        }
+                        
                         setTimeout(() => {
                             router.push("/Challenges");
                         }, 2500);

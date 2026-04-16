@@ -86,8 +86,50 @@ const Challenges = () => {
     const [unlockedLevel, setUnlockedLevel] = useState(1);
 
     useEffect(() => {
-        const highest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
-        setUnlockedLevel(highest);
+        // Fetch unlocked level on mount
+        const fetchUnlockedLevel = async () => {
+            const token = localStorage.getItem("token");
+            
+            // Try to fetch from backend first
+            if (token) {
+                try {
+                    // Decode token to get user ID
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const decoded = JSON.parse(atob(base64));
+                    const userId = decoded._id;
+                    
+                    // Fetch user progress from backend
+                    const res = await fetch(`http://localhost:5000/user/progress/${userId}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const highest = data.highestUnlockedLevel || 1;
+                        setUnlockedLevel(highest);
+                        // Sync with localStorage
+                        localStorage.setItem("highestUnlockedLevel", String(highest));
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch progress from backend:", err);
+                }
+            }
+            
+            // Fallback to localStorage
+            const highest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
+            setUnlockedLevel(highest);
+        };
+        
+        fetchUnlockedLevel();
+        
+        // Also refetch when page becomes visible (user returns from another page)
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible") {
+                fetchUnlockedLevel();
+            }
+        };
+        
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
     }, []);
 
     const maxLevelInt = Math.min(unlockedLevel, 11);

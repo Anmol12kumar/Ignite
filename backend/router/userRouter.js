@@ -112,6 +112,60 @@ router.get("/getbyid/:id", (req, res) => {
     });
 });
 
+// Get user progress (unlocked levels, XP, etc.)
+router.get("/progress/:id", (req, res) => {
+    const { id } = req.params;
+    User.findById(id)
+    .then(user => {
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json({
+            unlockedLevels: user.unlockedLevels || [1],
+            xp: user.xp || 0,
+            level: user.level || 1,
+            streak: user.streak || 0,
+            highestUnlockedLevel: Math.max(...(user.unlockedLevels || [1]))
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch progress", error: err });
+    });
+});
+
+// Update unlocked levels when challenge is completed
+router.post("/unlock-level", (req, res) => {
+    const { token, levelNumber } = req.body;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+        const userId = decoded._id;
+
+        User.findById(userId)
+        .then(user => {
+            if (!user) return res.status(404).json({ message: "User not found" });
+            
+            // Add level to unlockedLevels if not already there
+            if (!user.unlockedLevels.includes(levelNumber)) {
+                user.unlockedLevels.push(levelNumber);
+            }
+            
+            user.save()
+            .then(updatedUser => {
+                res.status(200).json({
+                    message: "Level unlocked",
+                    unlockedLevels: updatedUser.unlockedLevels,
+                    highestUnlockedLevel: Math.max(...updatedUser.unlockedLevels)
+                });
+            })
+            .catch(err => res.status(500).json(err));
+        })
+        .catch(err => res.status(500).json(err));
+    } catch (err) {
+        res.status(401).json({ message: "Invalid token" });
+    }
+});
+
 router.delete("/delete/:id", (req, res) => {
     User.findByIdAndDelete(req.params.id)
     .then((result) => {

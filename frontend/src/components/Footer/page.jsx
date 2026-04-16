@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal/page";
 
 const Footer = () => (
@@ -13,9 +14,11 @@ const Footer = () => (
                         <p className="text-gray-400 mb-8">
                             Sign up, log in, and start playing — it's free to begin.
                         </p>
-                        <Button variant="hero" size="lg">
-                            Start Playing Free
-                        </Button>
+                        <Link href="/signup">
+                            <Button variant="hero" size="lg">
+                                Start Playing Free
+                            </Button>
+                        </Link>
                     </div>
                 </ScrollReveal>
             </div>
