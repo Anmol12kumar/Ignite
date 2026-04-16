@@ -1,9 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const User = require('../models/userModel');
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const nodemailer = require("nodemailer");
 
+<<<<<<< HEAD
 router.post("/add", (req, res) => {
     new User(req.body)
     .save()
@@ -41,70 +38,37 @@ router.post("/login", (req, res) => {
         } else if (diffDays === 0 && result.streak === 0) {
             // First time ever or after a long break where it was 0
             result.streak = 1;
+=======
+// Email bhejne ke liye transporter setup
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER, // Aapka gmail
+        pass: process.env.EMAIL_PASS, // Aapka App Password
+    },
+});
+
+router.post("/forgot-password", async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User nahi mila!" });
+>>>>>>> 518c759e846f26df1394ade5989bc0ac2eda40fb
         }
-        // If diffDays === 0, keep current streak (same day login)
 
-        result.lastActiveDate = now;
-        await result.save();
-        // --- END STREAK LOGIC ---
+        // Yahan hum ek simple message bhej rahe hain
+        // Real project mein yahan ek unique link bheja jata hai
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "Password Reset Request - Ignite",
+            text: `Aapka password reset request receive hua hai. Filhal aapka password ye hai: ${user.password} \n\nKripya ise login ke baad badal lein.`
+        };
 
-        jwt.sign(
-            { _id, email },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" },
-            (err, token) => {
-            if (err) {
-                console.log(err);
-                res.status(500).json(err);
-            } else {
-                res.status(200).json({ token, user: result });
-            }
-            },
-        );
-        } else {
-            res.status(401).json({ error: "Invalid credentials" });
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-    });
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ message: "Email bhej diya gaya hai!" });
+    } catch (error) {
+        res.status(500).json({ message: "Email bhejne mein error!" });
+    }
 });
-
-// 3. Get All Users (Admin Dashboard ke liye)
-router.get("/getall", (req, res) => {
-    User.find()
-    .then((result) => {
-        res.status(200).json(result);
-    })
-    .catch((err) => {
-        res.status(500).json(err);
-    });
-});
-
-// 4. Update Score (Jab user game khelega)
-router.put("/update-score/:id", (req, res) => {
-    User.findByIdAndUpdate(req.params.id, { score: req.body.score }, { new: true })
-    .then((result) => {
-        res.status(200).json(result);
-    })
-    .catch((err) => {
-        res.status(500).json(err);
-    });
-});
-
-// --- Baaki purane routes (delete, getbyid, etc.) ---
-
-router.get("/getbyid/:id", (req, res) => {
-    User.findById(req.params.id)
-    .then((result) => res.status(200).json(result))
-    .catch((err) => res.status(500).json(err));
-});
-
-router.delete("/delete/:id", (req, res) => { // Isko delete kar diya router.get se router.delete mein
-    User.findByIdAndDelete(req.params.id)
-    .then((result) => res.status(200).json(result))
-    .catch((err) => res.status(500).json(err));
-});
-
-module.exports = router;

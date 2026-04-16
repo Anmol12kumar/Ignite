@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useState } from "react"; // Loading state ke liye
 
 const loginSchema = Yup.object().shape({
     email: Yup.string()
@@ -18,6 +19,7 @@ const loginSchema = Yup.object().shape({
 
 const Login = () => {
     const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
 
     const loginForm = useFormik({
         initialValues: {
@@ -26,31 +28,33 @@ const Login = () => {
         },
         validationSchema: loginSchema,
         onSubmit: async (values) => {
+            setIsSubmitting(true);
             try {
                 const res = await axios.post("http://localhost:5000/user/login", values);
                 
                 if (res.status === 200) {
                     toast.success("Login successful");
 
-                    // 1. Backend se Token, Role aur User Data nikalna
+                    // 1. Backend se Data nikalna
                     const { token, role } = res.data;
 
                     // 2. LocalStorage mein values store karna
                     localStorage.setItem("token", token);
-                    localStorage.setItem("role", role); // UI logic ke liye (Admin vs User)
-                    localStorage.setItem("userEmail", values.email); // isAdmin middleware ke headers ke liye
+                    localStorage.setItem("role", role);
+                    localStorage.setItem("userEmail", values.email);
 
-                    // 3. Role ke basis par redirection
+                    // 3. Role ke basis par sahi path par bhejna
                     if (role === "admin") {
-                        router.push("/admin-dashboard"); // Agar admin page alag hai
+                        router.push("/admin/dashboard"); // Updated Path
                     } else {
                         router.push("/Challenges");
                     }
                 }
             } catch (error) {
-                // Backend se aane wala specific error message dikhayein
-                const errorMsg = error.response?.data?.message || "Login failed";
+                const errorMsg = error.response?.data?.error || "Invalid email or password";
                 toast.error(errorMsg);
+            } finally {
+                setIsSubmitting(false);
             }
         },
     });
@@ -85,11 +89,12 @@ const Login = () => {
                                 name="email"
                                 value={loginForm.values.email}
                                 onChange={loginForm.handleChange}
+                                onBlur={loginForm.handleBlur}
                                 placeholder="you@example.com"
-                                className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                                className={`w-full h-10 px-3 rounded-md border ${loginForm.errors.email && loginForm.touched.email ? 'border-red-500' : 'border-gray-700'} bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all`}
                             />
                             {loginForm.errors.email && loginForm.touched.email && (
-                                <p className="text-xs text-red-500 mt-1">{loginForm.errors.email}</p>
+                                <p className="text-[10px] text-red-500 mt-1">{loginForm.errors.email}</p>
                             )}
                         </div>
 
@@ -101,16 +106,17 @@ const Login = () => {
                                 name="password"
                                 value={loginForm.values.password}
                                 onChange={loginForm.handleChange}
+                                onBlur={loginForm.handleBlur}
                                 placeholder="••••••••"
-                                className="w-full h-10 px-3 rounded-md border border-gray-700 bg-gray-800 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                                className={`w-full h-10 px-3 rounded-md border ${loginForm.errors.password && loginForm.touched.password ? 'border-red-500' : 'border-gray-700'} bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all`}
                             />
                             {loginForm.errors.password && loginForm.touched.password && (
-                                <p className="text-xs text-red-500 mt-1">{loginForm.errors.password}</p>
+                                <p className="text-[10px] text-red-500 mt-1">{loginForm.errors.password}</p>
                             )}
                         </div>
 
                         <div className="flex justify-end">
-                            <Link href="/forgot-password" className="text-xs text-emerald-400 hover:underline">
+                            <Link href="/forgot-password" size="sm" className="text-xs text-emerald-400 hover:underline">
                                 Forgot password?
                             </Link>
                         </div>
@@ -119,9 +125,10 @@ const Login = () => {
                             type="submit"
                             variant="hero"
                             size="lg"
-                            className="w-full mt-2 bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-md"
+                            className="w-full mt-2 bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-md disabled:opacity-50"
+                            disabled={isSubmitting}
                         >
-                            Login
+                            {isSubmitting ? "Logging in..." : "Login"}
                         </Button>
                     </form>
 
