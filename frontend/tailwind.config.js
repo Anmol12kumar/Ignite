@@ -42,10 +42,18 @@ export default {
           "0%, 100%": { opacity: 0.6, transform: "scale(1)" },
           "50%": { opacity: 1, transform: "scale(1.05)" },
         },
+        brain3dPop: {
+          "0%": { transform: "perspective(1000px) rotateY(0deg) scale(1) translateY(0px)" },
+          "25%": { transform: "perspective(1000px) rotateY(90deg) scale(1.12) translateY(-15px)" },
+          "50%": { transform: "perspective(1000px) rotateY(180deg) scale(1) translateY(0px)" },
+          "75%": { transform: "perspective(1000px) rotateY(270deg) scale(1.12) translateY(-15px)" },
+          "100%": { transform: "perspective(1000px) rotateY(360deg) scale(1) translateY(0px)" },
+        },
       },
       animation: {
         float: "float 4s ease-in-out infinite",
         pulseGlow: "pulseGlow 6s ease-in-out infinite",
+        brain3dPop: "brain3dPop 8s linear infinite",
       },
     },
   },

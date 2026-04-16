@@ -7,7 +7,6 @@ const mySchema = new Schema(
         password: { type: String, required: true },
         avatar: { type: String, default: null },
         
-        // Gamification & Scores
         role: { type: String, enum: ["user", "admin"], default: "user" },
         score: { type: Number, default: 0 }, // Dashboard par dikhane ke liye total score
         level: { type: Number, default: 1 },
@@ -27,8 +26,7 @@ const mySchema = new Schema(
         ],
         unlockedLevels: { type: [Number], default: [1] },
     },
-    { timestamps: true } // Isse 'createdAt' aur 'updatedAt' apne aap ban jayenge
+    { timestamps: true } 
 );
 
-// Puraane export code ko hata kar sirf ye ek line rakhein
 module.exports = model("users", mySchema);

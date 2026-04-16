@@ -4,9 +4,8 @@ const User = require('../models/userModel');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// 1. Signup Route (Default User)
 router.post("/add", (req, res) => {
-    new User(req.body) // req.body mein role nahi bhejenge to model default "user" le lega
+    new User(req.body)
     .save()
     .then((result) => {
         res.status(200).json(result);
@@ -17,7 +16,6 @@ router.post("/add", (req, res) => {
     });
 });
 
-// 2. Login Route (ROLE BHEJNA ZAROORI HAI)
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
 
@@ -26,11 +24,9 @@ router.post("/login", (req, res) => {
         if (result) {
         const { _id, email, lastActiveDate } = result;
 
-        // --- STREAK LOGIC ---
         const now = new Date();
         const last = new Date(lastActiveDate || 0);
-
-        // Reset hours/minutes to compare just the calendar day
+        // --- STREAK LOGIC ---
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
         

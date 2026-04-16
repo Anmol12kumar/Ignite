@@ -144,3 +144,21 @@
 .animate-pulse-glow {
     animation: pulse-glow 3s ease-in-out infinite;
 }
+
+@keyframes brainPop {
+    0%, 100% { transform: scale(1) translateY(0px); }
+    50% { transform: scale(1.1) translateY(-15px); }
+}
+
+@keyframes brainPopReverse {
+    0%, 100% { transform: scale(1) translateY(0px); }
+    50% { transform: scale(0.85) translateY(-5px); }
+}
+
+.animate-brain3dPop {
+    animation: brainPop 4s ease-in-out infinite;
+}
+
+.animate-brainPopReverse {
+    animation: brainPopReverse 4s ease-in-out infinite;
+}

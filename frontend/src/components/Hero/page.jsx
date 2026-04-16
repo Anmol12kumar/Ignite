@@ -3,7 +3,6 @@ import ScrollReveal from "@/components/ScrollReveal/page";
 
 const Hero = () => (
     <section className="relative min-h-[90vh] flex items-center pt-14 overflow-hidden">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] animate-pulseGlow pointer-events-none" />
 
         <div className="container px-[200px] relative z-10">
             <div className="grid lg:grid-cols-2 gap-14 items-center">
@@ -42,13 +41,19 @@ const Hero = () => (
                     </ScrollReveal>
                 </div>
 
-                <ScrollReveal delay={300} direction="left">
-                    <div className="flex justify-center lg:justify-end">
-                        <img 
-                        src="/images/hero-prompt-engineering.png" 
-                        alt="Prompt Engineering"
-                        className="w-full max-w-xl lg:max-w-2xl -mr-[130px] animate-float" 
-                        />
+                <ScrollReveal delay={300} direction="left" className="flex items-center h-full">
+                    <div className="flex justify-center lg:justify-end w-full mt-10 lg:mt-0">
+                        {/* Parent box strictly controls the circle's bounding dimensions */}
+                        <div className="relative flex justify-center items-center w-[320px] h-[320px] lg:w-[450px] lg:h-[450px]">
+                            {/* Synchronized Hover Reverse Glow Behind the Brain */}
+                            <div className="absolute inset-0 w-full h-full bg-emerald-500/15 rounded-full blur-[80px] animate-brainPopReverse pointer-events-none" />
+                            
+                            <img 
+                            src="/images/hero-prompt-engineering.png" 
+                            alt="Prompt Engineering"
+                            className="relative z-10 w-[95%] lg:w-full object-contain animate-brain3dPop drop-shadow-2xl" 
+                            />
+                        </div>
                     </div>
                 </ScrollReveal>
             </div>

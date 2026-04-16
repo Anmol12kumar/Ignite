@@ -12,6 +12,7 @@ import HistorySection from "@/components/HistorySection/page";
 import FutureSection from "@/components/FutureSection/page";
 import Footer from "@/components/Footer/page";
 import ScrollReveal from "@/components/ScrollReveal/page";
+import ChatButton from "@/components/ChatButton";
 
 export default function Home() {
     return (
@@ -29,6 +30,7 @@ export default function Home() {
             <FutureSection />
             <Footer />
             <ScrollReveal />
+            <ChatButton />
         </main>
     );
 }

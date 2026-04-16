@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { level1ChallengeQuestions } from "@/data/level1challengequestions";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const ChallengeResults = () => {
     const { level } = useParams();
@@ -24,6 +25,19 @@ const ChallengeResults = () => {
             if (vals.length > 0) {
                 const overall = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
                 const earnedXP = overall * 10;
+                
+                if (overall >= 75) {
+                    const currentHighest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
+                    const currentLevelNum = parseInt(level, 10) || 1; // e.g. "1" to 1
+                    
+                    if (currentLevelNum >= currentHighest) {
+                        localStorage.setItem("highestUnlockedLevel", String(currentLevelNum + 1));
+                        toast.success("Congratulations! Next Level Unlocked! 🎉", { duration: 4000 });
+                        setTimeout(() => {
+                            router.push("/Challenges");
+                        }, 2500);
+                    }
+                }
 
                 const baselineXp = parseInt(localStorage.getItem("userXP") || "0"); 
                 localStorage.setItem("userXP", String(baselineXp + earnedXP));

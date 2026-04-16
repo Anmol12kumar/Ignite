@@ -3,6 +3,7 @@ import { useState, useRef, useCallback } from "react";
 import { level1Questions } from "@/data/level1Questions";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import ChatButton from "@/components/ChatButton";
 
 const Assessment = () => {
     const [selectedQ, setSelectedQ] = useState(null);
@@ -175,7 +176,7 @@ const Assessment = () => {
                         </h2>
                         <div className="space-y-2">
                             {level1Questions.map((q, index) => {
-                                const isUnlocked = true;
+                                const isUnlocked = index === 0 || completedQs.has(level1Questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
@@ -382,6 +383,7 @@ const Assessment = () => {
                     )}
                 </div>
             </div>
+            <ChatButton />
         </div>
     );
 };

@@ -1,5 +1,7 @@
+"use client";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 const levels = [
     { level: 1, name: "Gatekeeper", icon: "🚪", unlocked: true },
@@ -68,73 +70,90 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => {
     </div>
 );
 
-if(unlocked && level === 1){
-    return <Link href = "/Assessment">{cardContent}</Link>
-}
+    if (unlocked) {
+        if (level === 1) {
+            return <Link href="/Assessment">{cardContent}</Link>;
+        }
+        if (!boss) {
+            return <Link href={`/challenge/${level}`}>{cardContent}</Link>;
+        }
+    }
 
-return cardContent;
+    return cardContent;
 };
 
-const Challenges = () => (
-    <div className="min-h-screen bg-black">
-        {/* Top bar */}
-        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-700 bg-black/80 backdrop-blur-xl">
-            <div className="container px-20 flex h-14 items-center justify-between">
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="h-7 w-7 bg-emerald-600 rounded-md bg-primary flex items-center justify-center">
-                        <span className="text-primary-foreground font-bold text-xs font-mono">I</span>
+const Challenges = () => {
+    const [unlockedLevel, setUnlockedLevel] = useState(1);
+
+    useEffect(() => {
+        const highest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
+        setUnlockedLevel(highest);
+    }, []);
+
+    const maxLevelInt = Math.min(unlockedLevel, 11);
+
+    return (
+        <div className="min-h-screen bg-black">
+            {/* Top bar */}
+            <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-700 bg-black/80 backdrop-blur-xl">
+                <div className="container px-20 flex h-14 items-center justify-between">
+                    <Link href="/" className="flex items-center gap-2">
+                        <div className="h-7 w-7 bg-emerald-600 rounded-md bg-primary flex items-center justify-center">
+                            <span className="text-primary-foreground font-bold text-xs font-mono">I</span>
+                        </div>
+                        <span className="font-semibold tracking-tight text-white">Ignite</span>
+                    </Link>
+                    <Link href="/user/profile">
+                        <Button className="px-3 py-1 text-sm rounded-lg bg-transparent text-gray-300 hover:bg-bg-gray-800">Profile</Button>
+                    </Link>
+                </div>
+            </nav>
+
+            <main className="container pt-28 pb-20">
+                {/* Header */}
+                <div className="text-center mb-14">
+                    <span className="font-mono text-[13px] tracking-[0.25em] uppercase text-emerald-400 mb-3 block">
+                        Challenge Arena
+                    </span>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
+                        Master the Art of Prompting
+                    </h1>
+                    <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base">
+                        Complete each challenge to unlock the next. Conquer all levels to face the Boss.
+                    </p>
+                </div>
+
+                {/* Progress bar */}
+                <div className="max-w-md mx-auto mb-14">
+                    <div className="flex justify-between text-xs font-mono text-emerald-400 mb-2">
+                        <span>Progress</span>
+                        <span>{maxLevelInt} / 11</span>
                     </div>
-                    <span className="font-semibold tracking-tight text-white">Ignite</span>
-                </Link>
-                <Link href="/user/profile">
-                    <Button className="px-3 py-1 text-sm rounded-lg bg-transparent text-gray-300 hover:bg-bg-gray-800">Profile</Button>
-                </Link>
-            </div>
-        </nav>
-
-        <main className="container pt-28 pb-20">
-            {/* Header */}
-            <div className="text-center mb-14">
-                <span className="font-mono text-[13px] tracking-[0.25em] uppercase text-emerald-400 mb-3 block">
-                    Challenge Arena
-                </span>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
-                    Master the Art of Prompting
-                </h1>
-                <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base">
-                    Complete each challenge to unlock the next. Conquer all levels to face the Boss.
-                </p>
-            </div>
-
-            {/* Progress bar */}
-            <div className="max-w-md mx-auto mb-14">
-                <div className="flex justify-between text-xs font-mono text-emerald-400 mb-2">
-                    <span>Progress</span>
-                    <span>1 / 11</span>
+                    <div className="h-2 rounded-full bg-gray-800 overflow-hidden">
+                        <div
+                            className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.6)] transition-all duration-500"
+                            style={{ width: `${(maxLevelInt / 11) * 100}%` }}
+                        />
+                    </div>
                 </div>
-                <div className="h-2 rounded-full bg-gray-800 overflow-hidden">
-                    <div
-                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.6)] transition-all duration-500"
-                        style={{ width: `${(1 / 11) * 100}%` }}
-                    />
-                </div>
-            </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                {/* Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+
                 {levels.filter((l) => !l.boss).map((l) => (
-                    <LevelCard key={l.level} {...l} />
+                    <LevelCard key={l.level} {...l} unlocked={l.level <= unlockedLevel} />
                 ))}
             </div>
 
             {/* Boss card */}
             <div className="max-w-sm mx-auto mt-14">
                 {levels.filter((l) => l.boss).map((l) => (
-                    <LevelCard key="boss" {...l} />
+                    <LevelCard key="boss" {...l} unlocked={unlockedLevel > 10} />
                 ))}
             </div>
         </main>
     </div>
-);
+    );
+};
 
 export default Challenges;
