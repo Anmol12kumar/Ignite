@@ -1,11 +1,11 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { level1Questions } from "@/data/level1Questions";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ChatButton from "@/components/ChatButton";
+import { level2Questions } from "@/data/level2Questions";
 
-const Assessment = () => {
+const Assessment2 = () => {
     const [selectedQ, setSelectedQ] = useState(null);
     const [userPrompt, setUserPrompt] = useState("");
     const [feedback, setFeedback] = useState(null);
@@ -14,6 +14,7 @@ const Assessment = () => {
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState("");
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const containerRef = useRef(null);
     const dragging = useRef(false);
     const recognitionRef = useRef(null);
@@ -89,6 +90,7 @@ const Assessment = () => {
             setVoiceStatus("");
         } else {
             recognitionRef.current.start();
+            setIsSpeaking(true);
         }
     };
 
@@ -112,7 +114,7 @@ const Assessment = () => {
 
     const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
-        const q = level1Questions.find((q) => q.id === selectedQ);
+        const q = level2Questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
         setIsEvaluating(true);
@@ -123,7 +125,7 @@ const Assessment = () => {
                 try {
                     const controller = new AbortController();
                     const timeout = setTimeout(() => controller.abort(new Error("Request timeout after 30s")), 30000); // 30s timeout per attempt
-                    
+
                     try {
                         const res = await fetch("http://localhost:5000/evaluate", {
                             method: "POST",
@@ -137,19 +139,19 @@ const Assessment = () => {
                             }),
                             signal: controller.signal
                         });
-                        
+
                         if (!res.ok) {
-                        const errorText = await res.text();
-                        console.error(`Attempt ${attempt}: Server returned ${res.status}:`, errorText);
-                        if (res.status === 503 && attempt < retries) {
-                            const delay = Math.pow(2, attempt) * 1000;
-                            console.log(`Retrying in ${delay}ms...`);
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                            continue;
+                            const errorText = await res.text();
+                            console.error(`Attempt ${attempt}: Server returned ${res.status}:`, errorText);
+                            if (res.status === 503 && attempt < retries) {
+                                const delay = Math.pow(2, attempt) * 1000;
+                                console.log(`Retrying in ${delay}ms...`);
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                continue;
+                            }
+                            throw new Error(`API Error ${res.status}: ${errorText}`);
                         }
-                        throw new Error(`API Error ${res.status}: ${errorText}`);
-                    }
-                    
+
                         return await res.json();
                     } finally {
                         clearTimeout(timeout);
@@ -170,7 +172,7 @@ const Assessment = () => {
             const data = await evaluateWithRetry();
             const pct = data.pct;
             const passed = pct >= 75;
-            
+
             setFeedback({
                 pct,
                 matched: data.matched || [],
@@ -179,7 +181,7 @@ const Assessment = () => {
                 sampleAnswer: q.sampleAnswer,
                 passed
             });
-            
+
             if (passed) {
                 setCompletedQs((prev) => new Set([...prev, selectedQ]));
             }
@@ -207,10 +209,10 @@ const Assessment = () => {
         }
     };
 
-    const activeQuestion = level1Questions.find((q) => q.id === selectedQ);
-    const completionPct = Math.round((completedQs.size / level1Questions.length) * 100);
-    const isLastQuestion = selectedQ === level1Questions[level1Questions.length - 1].id;
-    const allCompleted = completedQs.size === level1Questions.length;
+    const activeQuestion = level2Questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / level2Questions.length) * 100);
+    const isLastQuestion = selectedQ === level2Questions[level2Questions.length - 1].id;
+    const allCompleted = completedQs.size === level2Questions.length;
 
     return (
         <div className="h-screen flex flex-col bg-black text-white">
@@ -225,13 +227,13 @@ const Assessment = () => {
                         <div className="h-5 w-px bg-gray-700/60" />
                         <div className="flex items-center gap-2">
                             <span className="text-lg">🚪</span>
-                            <span className="font-semibold tracking-tight">Level 1 — Gatekeeper</span>
+                            <span className="font-semibold tracking-tight">Level 2 — Librarian</span>
                         </div>
                     </div>
                     {/* Progress bar */}
                     <div className="flex items-center gap-3">
                         <span className="font-mono text-xs text-gray-500">
-                            {completedQs.size}/{level1Questions.length} practiced
+                            {completedQs.size}/{level2Questions.length} practiced
                         </span>
                         <div className="w-32 h-2 rounded-full bg-muted overflow-hidden">
                             <div
@@ -253,8 +255,8 @@ const Assessment = () => {
                             Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {level1Questions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(level1Questions[index - 1].id);
+                            {level2Questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(level2Questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
@@ -461,8 +463,8 @@ const Assessment = () => {
                                             <p className="text-sm text-emerald-300 mb-4">You've successfully answered this question. You can now attempt the next question.</p>
                                             <Button
                                                 onClick={() => {
-                                                    const currentIndex = level1Questions.findIndex(q => q.id === selectedQ);
-                                                    const nextQ = level1Questions[currentIndex + 1];
+                                                    const currentIndex = level2Questions.findIndex(q => q.id === selectedQ);
+                                                    const nextQ = level2Questions[currentIndex + 1];
                                                     if (nextQ) {
                                                         setSelectedQ(nextQ.id);
                                                         setUserPrompt("");
@@ -480,10 +482,10 @@ const Assessment = () => {
                                     {isLastQuestion && allCompleted && feedback.passed && (
                                         <div className="mt-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-center flex flex-col items-center">
                                             <p className="text-emerald-400 font-semibold mb-1">Level Complete!</p>
-                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 1.</p>
+                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 2.</p>
                                             <Link href="/challenge" className="w-full">
                                                 <Button size="lg" className="w-full text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
-                                                    🚀 Ready for the First Challenge
+                                                    🚀 Ready for the Second Challenge
                                                 </Button>
                                             </Link>
                                         </div>
@@ -499,4 +501,4 @@ const Assessment = () => {
     );
 };
 
-export default Assessment;
+export default Assessment2;
