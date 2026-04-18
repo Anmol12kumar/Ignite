@@ -78,7 +78,7 @@ const ChallengeResults = () => {
         ? Math.round(scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length)
         : 0;
 
-    const passed = scoreValues.every((s) => s >= 50);
+    const passed = overallScore >= 75;
 
     const grade =
         overallScore >= 90
@@ -202,7 +202,7 @@ const ChallengeResults = () => {
                 {/* Actions */}
                 <ScrollReveal delay={300}>
                     <div className="flex flex-col sm:flex-row gap-3">
-                        {passed ? (
+                        {overallScore >= 75 ? (
                             <Link href="/leaderboard" className="flex-1">
                                 <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-black">
                                     🏆 View Leaderboard

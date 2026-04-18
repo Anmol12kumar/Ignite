@@ -25,6 +25,8 @@ const mySchema = new Schema(
             },
         ],
         unlockedLevels: { type: [Number], default: [1] },
+        resetToken: { type: String, default: null },
+        resetTokenExpiry: { type: Date, default: null },
     },
     { timestamps: true } 
 );
