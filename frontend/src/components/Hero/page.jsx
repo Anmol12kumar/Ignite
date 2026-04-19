@@ -37,9 +37,6 @@ const Hero = () => (
                                     Start Playing Free
                                 </Button>
                             </Link>
-                            <Button variant="heroOutline" size="lg">
-                                Explore Concepts
-                            </Button>
                         </div>
                     </ScrollReveal>
                 </div>

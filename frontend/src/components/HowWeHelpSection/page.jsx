@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/Button";
 import ScrollReveal from "@/components/ScrollReveal/page";
 import { howWeHelpSteps } from "@/data/content";
 import Section from "@/components/shared/Section";
 import SectionHeader from "@/components/shared/SectionHeader";
+import Link from "next/link";
 
 const HowWeHelpSection = () => (
     <Section id="how-we-help">
@@ -11,7 +11,7 @@ const HowWeHelpSection = () => (
                 <SectionHeader tag="How Ignite Works" />
                 <ScrollReveal delay={100}>
                     <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 leading-tight">
-                        We teach you by<br/>making you play
+                        We teach you by<br />making you play
                     </h2>
                 </ScrollReveal>
                 <ScrollReveal delay={200}>
@@ -30,9 +30,13 @@ const HowWeHelpSection = () => (
                     </p>
                 </ScrollReveal>
                 <ScrollReveal delay={400}>
-                    <Button varient="hero" size="lg">
-                        Sign Up & Start Playing
-                    </Button>
+                    <Link href="/signup">
+                        <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-6 py-3 shadow-emerald-700 shadow-xl rounded-lg transition-all duration-200"
+                        >
+                            Sign Up & Start Playing
+                        </button>
+                    </Link>
                 </ScrollReveal>
             </div>
 

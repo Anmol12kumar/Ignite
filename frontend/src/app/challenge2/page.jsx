@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { level1ChallengeQuestions } from "@/data/level1challengequestions";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { level2ChallengeQuestions } from "@/data/level2challengequestions";
 
 const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
     const color =
@@ -14,7 +14,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
                 : "text-red-500";
                 
     return (
-        <div className="mt-6 p-6 rounded-xl border border-gray-700 bg-gray-900 animate-slideUp hover:shadow-lg hover:border-emerald-400/30 transition-all duration-300">
+        <div className="mt-6 p-6 rounded-xl border border-gray-700 bg-gray-900 animate-fade-in">
             <p className="text-sm text-gray-400 mb-2">Your Score</p>
             <p className={`text-6xl font-bold ${color}`}>{score}</p>
             <p className="text-gray-400 text-sm mt-1">out of 100</p>
@@ -41,7 +41,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
             </p>
 
             {suggestions && (
-                <div className="mt-4 p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/40 text-left hover:bg-indigo-500/15 transition-all duration-300">
+                <div className="mt-4 p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/40 text-left">
                     <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400 mb-2 flex items-center gap-2">✨ AI Suggestions</h4>
                     <p className="text-sm text-indigo-200 leading-relaxed">{suggestions}</p>
                 </div>
@@ -62,7 +62,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
     );
 };
 
-const Challenge = () => {
+const Challenge2 = () => {
     const { level } = useParams();
     const [unlockedUpTo, setUnlockedUpTo] = useState(100); // index
     const [activeQ, setActiveQ] = useState(0);
@@ -77,7 +77,7 @@ const Challenge = () => {
         }
     }, [scores]);
 
-    const questions = level1ChallengeQuestions;
+    const questions = level2ChallengeQuestions;
 
     const evaluate = async () => {
         setSubmitting(true);
@@ -175,7 +175,7 @@ const Challenge = () => {
             {/* Header */}
             <header className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
                 <Link
-                    href={`/Assessment`}
+                    href={`/Assessment2`}
                     className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
                     ← Back to Practice
@@ -276,4 +276,4 @@ const Challenge = () => {
     );
 };
 
-export default Challenge;
+export default Challenge2;

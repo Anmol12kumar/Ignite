@@ -49,11 +49,32 @@ export default {
           "75%": { transform: "perspective(1000px) rotateY(270deg) scale(1.12) translateY(-15px)" },
           "100%": { transform: "perspective(1000px) rotateY(360deg) scale(1) translateY(0px)" },
         },
+        slideUp: {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        slideDown: {
+          "0%": { transform: "translateY(-10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        glow: {
+          "0%, 100%": { boxShadow: "0 0 5px rgba(52, 211, 153, 0)" },
+          "50%": { boxShadow: "0 0 25px rgba(52, 211, 153, 0.4)" },
+        },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-4px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(4px)" },
+        },
       },
       animation: {
         float: "float 4s ease-in-out infinite",
         pulseGlow: "pulseGlow 6s ease-in-out infinite",
         brain3dPop: "brain3dPop 8s linear infinite",
+        slideUp: "slideUp 0.5s ease-out",
+        slideDown: "slideDown 0.5s ease-out",
+        glow: "glow 3s ease-in-out infinite",
+        shake: "shake 0.5s ease-in-out",
       },
     },
   },

@@ -266,11 +266,11 @@ const Assessment2 = () => {
                                             }
                                         }}
                                         disabled={!isUnlocked}
-                                        className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${!isUnlocked
+                                        className={`w-full text-left p-4 rounded-lg border transition-all duration-300 ${!isUnlocked
                                             ? "opacity-50 cursor-not-allowed border-gray-800 bg-gray-900/40"
                                             : selectedQ === q.id
-                                                ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)]"
-                                                : "border-gray-700 bg-gray-900 hover:border-gray-600 hover:bg-gray-800"
+                                                ? "border-emerald-400 bg-emerald-400/10 shadow-[0_0_20px_-8px_rgba(16,185,129,0.4)] scale-105"
+                                                : "border-gray-700 bg-gray-900 hover:-translate-y-1 hover:border-emerald-400/50 hover:bg-gray-800/60 hover:shadow-lg hover:shadow-emerald-500/10"
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">
@@ -358,17 +358,17 @@ const Assessment2 = () => {
                                         onChange={(e) => { setUserPrompt(e.target.value); setFeedback(null); }}
                                         placeholder="Write your own prompt based on the example above..."
                                         rows={6}
-                                        className="flex-1 rounded-lg border border-gray-700 bg-gray-900 p-4 text-sm text-white placeholder:text-gray-400/50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/30 resize-none transition-all"
+                                        className="flex-1 rounded-lg border border-gray-700 bg-gray-900 p-4 text-sm text-white placeholder:text-gray-400/50 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/50 focus:shadow-xl focus:shadow-emerald-500/20 resize-none transition-all duration-300 focus:scale-[1.01]"
                                     />
 
                                     {/* Voice Input Button */}
                                     <div className="flex flex-col gap-2">
                                         <button
                                             onClick={toggleVoiceInput}
-                                            className={`p-3 rounded-lg border-2 transition-all duration-200 flex items-center justify-center h-14 w-14 ${
+                                            className={`p-3 rounded-lg border-2 transition-all duration-300 flex items-center justify-center h-14 w-14 hover:-translate-y-1 hover:shadow-lg active:scale-95 ${
                                                 isListening
-                                                    ? "border-red-500 bg-red-500/20 text-red-400 hover:bg-red-500/30 animate-pulse"
-                                                    : "border-blue-500/50 bg-blue-500/10 text-blue-400 hover:border-blue-400 hover:bg-blue-500/20"
+                                                    ? "border-red-500 bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:shadow-red-500/20 animate-pulse"
+                                                    : "border-blue-500/50 bg-blue-500/10 text-blue-400 hover:border-blue-400 hover:bg-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20"
                                             }`}
                                             title={isListening ? "Click to stop recording" : "Click to enable voice input"}
                                         >
@@ -393,13 +393,13 @@ const Assessment2 = () => {
                                 </div>
                             </div>
 
-                            <Button disabled={isEvaluating} onClick={handleSubmit} variant="hero" size="lg" className="w-full mb-8 bg-emerald-400 text-black hover:bg-emerald-500 shadow-md hover:shadow-lg disabled:opacity-75">
+                            <Button disabled={isEvaluating} onClick={handleSubmit} variant="hero" size="lg" className="w-full mb-8 bg-emerald-400 text-black hover:bg-emerald-500 shadow-md hover:shadow-2xl hover:shadow-emerald-500/30 hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-75">
                                 {isEvaluating ? "Analyzing with AI..." : "Submit & Check Accuracy"}
                             </Button>
 
                             {/* Feedback */}
                             {feedback && (
-                                <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     <div className={`rounded-xl border p-5 ${feedback.pct >= 75 ? "border-emerald-400/40 bg-emerald-400/10"
                                         : feedback.pct >= 50 ? "border-yellow-500/40 bg-yellow-500/10"
                                             : "border-red-500/40 bg-red-500/10"
