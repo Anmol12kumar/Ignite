@@ -32,7 +32,7 @@ const HowWeHelpSection = () => (
                 <ScrollReveal delay={400}>
                     <Link href="/signup">
                         <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-6 py-3 shadow-emerald-700 shadow-xl rounded-lg transition-all duration-200"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-6 py-3 shadow-emerald-700 shadow-xl rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/40 active:scale-95 animate-ctaPulse"
                         >
                             Sign Up & Start Playing
                         </button>
@@ -43,11 +43,11 @@ const HowWeHelpSection = () => (
             <div className="space-y-4">
                 {howWeHelpSteps.map((s, i) => (
                     <ScrollReveal key={s.step} delay={150 + i * 100} direction="left">
-                        <div className="flex gap-5 p-5 rounded-lg border border-gray-700 bg-gray-900 group hover:border-emerald-400 transition-colors duration-300">
-                            <span className="font-mono text-2xl font-bold text-emerald-500 shrink-0">{s.step}</span>
+                        <div className="flex gap-5 p-5 rounded-lg border border-gray-700 bg-gray-900 group hover:border-emerald-400 transition-all duration-300 hover:bg-gray-800/80 hover:translate-y-[-4px] hover:shadow-lg hover:shadow-emerald-500/15 animate-fadeInScale">
+                            <span className="font-mono text-2xl font-bold text-emerald-500 shrink-0 group-hover:animate-spinSlow transition-all duration-300">{s.step}</span>
                             <div>
-                                <h3 className="font-semibold mb-1 text-base">{s.title}</h3>
-                                <p className="text-sm text-gray-400 leading-relaxed">{s.desc}</p>
+                                <h3 className="font-semibold mb-1 text-base group-hover:text-emerald-400 transition-colors duration-300">{s.title}</h3>
+                                <p className="text-sm text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">{s.desc}</p>
                             </div>
                         </div>
                     </ScrollReveal>

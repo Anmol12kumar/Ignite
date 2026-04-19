@@ -18,7 +18,9 @@ const Hero = () => (
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] mb-6">
                             Master the art of
                             <br />
-                            <span className="bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">talking to AI</span>
+                            <span className="inline-block bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-600 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradientFlow">
+                                talking to AI
+                            </span>
                         </h1>
                     </ScrollReveal>
 
@@ -33,7 +35,7 @@ const Hero = () => (
                     <ScrollReveal delay={500}>
                         <div className="flex flex-wrap gap-3">
                             <Link href="/signup">
-                                <Button variant="hero" size="lg">
+                                <Button variant="hero" size="lg" className="relative group animate-ctaPulse">
                                     Start Playing Free
                                 </Button>
                             </Link>

@@ -15,9 +15,9 @@ const ListColumn = ({ tag, tagColor, title, icon, iconColor, items, direction = 
         <div className="space-y-4">
             {items.map((item, i) => (
                 <ScrollReveal key={i} delay={120 + i * 60} direction={direction}>
-                    <div className="flex gap-4 p-5 rounded-lg border border-gray-700 bg-gray-900">
-                        <span className={`${iconColor} font-mono text-lg mt-0.5 shrink-0`}>{icon}</span>
-                        <p className="text-m text-gray-300 leading-relaxed">{item}</p>
+                    <div className="flex gap-4 p-5 rounded-lg border border-gray-700 bg-gray-900 transition-all duration-300 hover:bg-gray-800/80 hover:translate-y-[-4px] hover:shadow-lg hover:shadow-emerald-500/10 hover:border-emerald-400/50 group animate-fadeInScale">
+                        <span className={`${iconColor} font-mono text-lg mt-0.5 shrink-0 group-hover:animate-spinSlow transition-all duration-300`}>{icon}</span>
+                        <p className="text-m text-gray-300 leading-relaxed group-hover:text-gray-100 transition-colors duration-300">{item}</p>
                     </div>
                 </ScrollReveal>
             ))}

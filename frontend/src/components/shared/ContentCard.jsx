@@ -10,12 +10,12 @@ const ContentCard = ({
     direction = "up",
 }) => (
     <ScrollReveal delay={delay} direction={direction}>
-        <div className="p-6 rounded-lg border border-gray-700 h-full group transition-colors duration-300 hover:bg-gray-800">
+        <div className="p-6 rounded-lg border border-gray-700 h-full group transition-all duration-300 hover:bg-gray-800 hover:translate-y-[-4px] hover:shadow-2xl hover:shadow-emerald-500/20 hover:-rotate-1 cursor-pointer animate-fadeInScale">
             {prefix && (
                 <span className="font-mono text-xs text-gray-400 mb-4 block">{prefix}</span>
             )}
             <h3
-                className={`text-lg font-semibold mb-2 group-hover:text-emerald-400 transition-colors duration-200 ${titleClassName}`}
+                className={`text-lg font-semibold mb-2 group-hover:text-emerald-400 transition-all duration-300 ${titleClassName}`}
             >
                 {title}
             </h3>

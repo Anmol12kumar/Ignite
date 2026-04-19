@@ -25,13 +25,13 @@ const WhatIsSection = () => (
             </div>
 
             <ScrollReveal delay={150}>
-                <div className="border border-gray-700 rounded-lg p-8 bg-gray-900">
+                <div className="border border-gray-700 rounded-lg p-8 bg-gray-900 transition-all duration-300 hover:border-emerald-400/40 hover:shadow-lg hover:shadow-emerald-500/20 animate-fadeInScale">
                     <h3 className="font-bold mb-5 text-2xl">Why It Matters</h3>
                     <div className="space-y-4">
                         {whyItMatters.map((item) => (
-                            <div key={item.n} className="flex gap-4">
-                                <span className="font-mono text-lg font-bold text-emerald-500 mt-1 shrink-0">{item.n}</span>
-                                <p className="text-base text-gary-300 leading-relaxed">{item.text}</p>
+                            <div key={item.n} className="flex gap-4 group hover:translate-x-1 transition-transform duration-300">
+                                <span className="font-mono text-lg font-bold text-emerald-500 mt-1 shrink-0 group-hover:animate-spinSlow transition-all duration-300">{item.n}</span>
+                                <p className="text-base text-gray-300 leading-relaxed group-hover:text-gray-100 transition-colors duration-300">{item.text}</p>
                             </div>
                         ))}
                     </div>

@@ -3,9 +3,9 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ChatButton from "@/components/ChatButton";
-import { level2Questions } from "@/data/level2Questions";
+import { level3Questions } from "@/data/level3Questions";
 
-const Assessment2 = () => {
+const Assessment3 = () => {
     const [selectedQ, setSelectedQ] = useState(null);
     const [userPrompt, setUserPrompt] = useState("");
     const [feedback, setFeedback] = useState(null);
@@ -207,10 +207,10 @@ const Assessment2 = () => {
         }
     };
 
-    const activeQuestion = level2Questions.find((q) => q.id === selectedQ);
-    const completionPct = Math.round((completedQs.size / level2Questions.length) * 100);
-    const isLastQuestion = selectedQ === level2Questions[level2Questions.length - 1].id;
-    const allCompleted = completedQs.size === level2Questions.length;
+    const activeQuestion = level3Questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / level3Questions.length) * 100);
+    const isLastQuestion = selectedQ === level3Questions[level3Questions.length - 1].id;
+    const allCompleted = completedQs.size === level3Questions.length;
 
     return (
         <div className="h-screen flex flex-col bg-black text-white">
@@ -225,13 +225,13 @@ const Assessment2 = () => {
                         <div className="h-5 w-px bg-gray-700/60" />
                         <div className="flex items-center gap-2">
                             <span className="text-lg">🚪</span>
-                            <span className="font-semibold tracking-tight">Level 2 — Librarian</span>
+                            <span className="font-semibold tracking-tight">Level 3 — Translator's Cave</span>
                         </div>
                     </div>
                     {/* Progress bar */}
                     <div className="flex items-center gap-3">
                         <span className="font-mono text-xs text-gray-500">
-                            {completedQs.size}/{level2Questions.length} practiced
+                            {completedQs.size}/{level3Questions.length} practiced
                         </span>
                         <div className="w-32 h-2 rounded-full bg-muted overflow-hidden">
                             <div
@@ -253,8 +253,8 @@ const Assessment2 = () => {
                             Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {level2Questions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(level2Questions[index - 1].id);
+                            {level3Questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(level3Questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
@@ -461,8 +461,8 @@ const Assessment2 = () => {
                                             <p className="text-sm text-emerald-300 mb-4">You've successfully answered this question. You can now attempt the next question.</p>
                                             <Button
                                                 onClick={() => {
-                                                    const currentIndex = level2Questions.findIndex(q => q.id === selectedQ);
-                                                    const nextQ = level2Questions[currentIndex + 1];
+                                                    const currentIndex = level3Questions.findIndex(q => q.id === selectedQ);
+                                                    const nextQ = level3Questions[currentIndex + 1];
                                                     if (nextQ) {
                                                         setSelectedQ(nextQ.id);
                                                         setUserPrompt("");
@@ -480,10 +480,10 @@ const Assessment2 = () => {
                                     {isLastQuestion && allCompleted && feedback.passed && (
                                         <div className="mt-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-center flex flex-col items-center">
                                             <p className="text-emerald-400 font-semibold mb-1">Level Complete!</p>
-                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 2.</p>
-                                            <Link href="/challenge2" className="w-full">
+                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 3.</p>
+                                            <Link href="/challenge3" className="w-full">
                                                 <Button size="lg" className="w-full text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
-                                                    🚀 Ready for the Second Challenge
+                                                    🚀 Ready for the Third Challenge
                                                 </Button>
                                             </Link>
                                         </div>
@@ -499,4 +499,4 @@ const Assessment2 = () => {
     );
 };
 
-export default Assessment2;
+export default Assessment3;

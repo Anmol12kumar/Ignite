@@ -66,6 +66,31 @@ export default {
           "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-4px)" },
           "20%, 40%, 60%, 80%": { transform: "translateX(4px)" },
         },
+        gradientFlow: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        floatBounce: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        spinSlow: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        ctaPulse: {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(52, 211, 153, 0.3)" },
+          "50%": { boxShadow: "0 0 40px rgba(52, 211, 153, 0.6)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-1000px 0" },
+          "100%": { backgroundPosition: "1000px 0" },
+        },
+        fadeInScale: {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         float: "float 4s ease-in-out infinite",
@@ -75,6 +100,12 @@ export default {
         slideDown: "slideDown 0.5s ease-out",
         glow: "glow 3s ease-in-out infinite",
         shake: "shake 0.5s ease-in-out",
+        gradientFlow: "gradientFlow 8s ease infinite",
+        floatBounce: "floatBounce 3s ease-in-out infinite",
+        spinSlow: "spinSlow 3s linear infinite",
+        ctaPulse: "ctaPulse 2s ease-in-out infinite",
+        shimmer: "shimmer 2s infinite",
+        fadeInScale: "fadeInScale 0.6s ease-out",
       },
     },
   },
