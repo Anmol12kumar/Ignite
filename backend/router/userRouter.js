@@ -28,23 +28,29 @@ router.post("/login", (req, res) => {
             const { _id, email, lastActiveDate } = result;
 
             const now = new Date();
-            const last = new Date(lastActiveDate || 0);
             
             // --- STREAK LOGIC ---
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+            // Check if this is the user's first login
+            const isFirstLogin = !lastActiveDate || lastActiveDate === null;
             
-            const diffDays = Math.floor((today - lastDay) / (1000 * 60 * 60 * 24));
+            if (isFirstLogin) {
+                // First time user - initialize streak to 1
+                result.streak = 1;
+            } else {
+                // Existing user - calculate days since last login
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const lastDay = new Date(lastActiveDate.getFullYear(), lastActiveDate.getMonth(), lastActiveDate.getDate());
+                
+                const diffDays = Math.floor((today - lastDay) / (1000 * 60 * 60 * 24));
 
-            if (diffDays === 1) {
-                // Logged in the very next day
-                result.streak += 1;
-            } else if (diffDays > 1) {
-                // Missed a day (or more)
-                result.streak = 1;
-            } else if (diffDays === 0 && result.streak === 0) {
-                // First time ever or after a long break where it was 0
-                result.streak = 1;
+                if (diffDays === 1) {
+                    // Logged in the very next day - increment streak
+                    result.streak += 1;
+                } else if (diffDays > 1) {
+                    // Missed a day (or more) - reset streak to 0
+                    result.streak = 0;
+                }
+                // If diffDays === 0, keep streak as is (same day re-login)
             }
 
             result.lastActiveDate = now;

@@ -28,15 +28,17 @@ router.post('/update', async (req, res) => {
                 totalXP: user.xp,
                 level: user.level,
                 challengesCompleted: 1,
+                bestStreak: user.streak || 0,
             });
         } else {
             entry.totalXP = user.xp;
             entry.level = user.level;
             entry.challengesCompleted += 1;
+            entry.bestStreak = user.streak || entry.bestStreak; 
         }
 
         await entry.save();
-        res.status(200).json({ message: "Score saved", xp: user.xp, level: user.level });
+        res.status(200).json({ message: "Score saved", xp: user.xp, level: user.level, streak: user.streak });
     } catch (err) {
         console.error("Leaderboard update error:", err);
         res.status(500).json({ error: err.message });
