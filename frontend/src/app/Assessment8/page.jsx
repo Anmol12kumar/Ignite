@@ -3,9 +3,9 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ChatButton from "@/components/ChatButton";
-import { level7Questions } from "@/data/level7Questions";
+import { level8Questions } from "@/data/level8Questions";
 
-const Assessment7 = () => {
+const Assessment8 = () => {
     const [selectedQ, setSelectedQ] = useState(null);
     const [userPrompt, setUserPrompt] = useState("");
     const [feedback, setFeedback] = useState(null);
@@ -112,7 +112,7 @@ const Assessment7 = () => {
 
     const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
-        const q = level7Questions.find((q) => q.id === selectedQ);
+        const q = level8Questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
         setIsEvaluating(true);
@@ -207,10 +207,10 @@ const Assessment7 = () => {
         }
     };
 
-    const activeQuestion = level7Questions.find((q) => q.id === selectedQ);
-    const completionPct = Math.round((completedQs.size / level7Questions.length) * 100);
-    const isLastQuestion = selectedQ === level7Questions[level7Questions.length - 1].id;
-    const allCompleted = completedQs.size === level7Questions.length;
+    const activeQuestion = level8Questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / level8Questions.length) * 100);
+    const isLastQuestion = selectedQ === level8Questions[level8Questions.length - 1].id;
+    const allCompleted = completedQs.size === level8Questions.length;
 
     return (
         <div className="h-screen flex flex-col bg-black text-white">
@@ -225,13 +225,13 @@ const Assessment7 = () => {
                         <div className="h-5 w-px bg-gray-700/60" />
                         <div className="flex items-center gap-2">
                             <span className="text-lg">🚪</span>
-                            <span className="font-semibold tracking-tight">Level 7 — IoT Collaborator Challenge</span>
+                            <span className="font-semibold tracking-tight">Level 8 — Music Remix Challenge</span>
                         </div>
                     </div>
                     {/* Progress bar */}
                     <div className="flex items-center gap-3">
                         <span className="font-mono text-xs text-gray-500">
-                            {completedQs.size}/{level7Questions.length} practiced
+                            {completedQs.size}/{level8Questions.length} practiced
                         </span>
                         <div className="w-32 h-2 rounded-full bg-muted overflow-hidden">
                             <div
@@ -253,8 +253,8 @@ const Assessment7 = () => {
                             Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {level7Questions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(level7Questions[index - 1].id);
+                            {level8Questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(level8Questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
@@ -461,8 +461,8 @@ const Assessment7 = () => {
                                             <p className="text-sm text-emerald-300 mb-4">You've successfully answered this question. You can now attempt the next question.</p>
                                             <Button
                                                 onClick={() => {
-                                                    const currentIndex = level7Questions.findIndex(q => q.id === selectedQ);
-                                                    const nextQ = level7Questions[currentIndex + 1];
+                                                    const currentIndex = level8Questions.findIndex(q => q.id === selectedQ);
+                                                    const nextQ = level8Questions[currentIndex + 1];
                                                     if (nextQ) {
                                                         setSelectedQ(nextQ.id);
                                                         setUserPrompt("");
@@ -480,10 +480,10 @@ const Assessment7 = () => {
                                     {isLastQuestion && allCompleted && feedback.passed && (
                                         <div className="mt-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-center flex flex-col items-center">
                                             <p className="text-emerald-400 font-semibold mb-1">Level Complete!</p>
-                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 7.</p>
-                                            <Link href="/challenge7" className="w-full">
+                                            <p className="text-sm text-emerald-300 mb-4">You have successfully mastered all questions in Level 8.</p>
+                                            <Link href="/challenge8" className="w-full">
                                                 <Button size="lg" className="w-full text-fuchsia-600 decoration-wavy decoration-fuchsia-800 font-semibold">
-                                                    🚀 Ready for the Seventh Challenge
+                                                    🚀 Ready for the Eighth Challenge
                                                 </Button>
                                             </Link>
                                         </div>
@@ -499,4 +499,4 @@ const Assessment7 = () => {
     );
 };
 
-export default Assessment7;
+export default Assessment8;

@@ -75,7 +75,7 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => {
             return <Link href="/Assessment">{cardContent}</Link>;
         }
         if (!boss) {
-            return <Link href={`/challenge/${level}`}>{cardContent}</Link>;
+            return <Link href={`/Assessment${level}`}>{cardContent}</Link>;
         }
     }
 

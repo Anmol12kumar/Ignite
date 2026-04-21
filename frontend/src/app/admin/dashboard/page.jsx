@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -67,7 +68,13 @@ const AdminDashboard = () => {
                         <h1 className="text-3xl font-bold text-emerald-500 tracking-tight">Admin Control Panel</h1>
                         <p className="text-gray-400 text-sm">Monitor user performance & system activity</p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
+                        <Link
+                            href="/Challenges"
+                            className="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 font-semibold"
+                        >
+                            🎮 Play Challenges
+                        </Link>
                         <button 
                             onClick={fetchUsers}
                             className="text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg border border-gray-700 transition-colors flex items-center gap-2"

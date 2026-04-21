@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { level7ChallengeQuestions } from "@/data/level7challengequestions";
+import { level9ChallengeQuestions } from "@/data/level9challengequestions";
 
 const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
     const color =
@@ -62,7 +62,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
     );
 };
 
-const Challenge7 = () => {
+const Challenge9 = () => {
     const { level } = useParams();
     const [unlockedUpTo, setUnlockedUpTo] = useState(100); // index
     const [activeQ, setActiveQ] = useState(0);
@@ -77,7 +77,7 @@ const Challenge7 = () => {
         }
     }, [scores]);
 
-    const questions = level7ChallengeQuestions;
+    const questions = level9ChallengeQuestions;
 
     const evaluate = async () => {
         setSubmitting(true);
@@ -175,7 +175,7 @@ const Challenge7 = () => {
             {/* Header */}
             <header className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
                 <Link
-                    href={`/Assessment7`}
+                    href={`/Assessment9`}
                     className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
                     ← Back to Practice
@@ -276,4 +276,4 @@ const Challenge7 = () => {
     );
 };
 
-export default Challenge7;
+export default Challenge9;

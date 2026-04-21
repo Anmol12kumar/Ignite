@@ -112,7 +112,7 @@ const Assessment2 = () => {
 
     const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
-        const q = level3Questions.find((q) => q.id === selectedQ);
+        const q = level2Questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
         setIsEvaluating(true);
