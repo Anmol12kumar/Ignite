@@ -11,9 +11,9 @@ const leaderboardRouter = require("./router/leaderboardRouter");
 
 const express = require("express");
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000" }));
 app.use(express.json());
 
 app.use('/user', userRouter);

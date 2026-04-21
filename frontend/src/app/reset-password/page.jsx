@@ -6,7 +6,7 @@ import { useFormik } from "formik";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const resetPasswordSchema = Yup.object().shape({
     newPassword: Yup.string()
@@ -26,13 +26,13 @@ const ResetPassword = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     // Validate token and email on component mount
-    useState(() => {
+    useEffect(() => {
         if (!token || !email) {
             toast.error("Invalid reset link");
             router.push("/login");
         }
         setIsLoading(false);
-    }, []);
+    }, [token, email, router]);
 
     const resetForm = useFormik({
         initialValues: {
