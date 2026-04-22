@@ -55,7 +55,8 @@ router.get('/', async (req, res) => {
             name: user.name,
             totalXP: user.xp,
             level: user.level,
-            bestStreak: user.streak || 0
+            bestStreak: user.streak || 0,
+            badges: user.badges ? user.badges.length : 0
         }));
 
         res.status(200).json(topPlayers);

@@ -68,7 +68,7 @@ const Leaderboard = () => {
                         avatar: p.name ? p.name.charAt(0).toUpperCase() : "👤",
                         xp: p.totalXP,
                         level: p.level,
-                        badges: Math.floor(p.totalXP / 2000), 
+                        badges: p.badges || 0, 
                         streak: p.bestStreak || 0
                     }));
 

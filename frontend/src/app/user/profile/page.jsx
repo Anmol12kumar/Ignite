@@ -72,7 +72,7 @@ const Profile = () => {
     const xp = user.xp || 0;
     const level = user.level || 1;
     const streak = user.streak || 0;
-    const badgesTotal = Math.floor(xp / 2000); 
+    const badgesTotal = user.badges ? user.badges.length : 0; 
     const xpToNext = level * 1000;
     const xpPercent = Math.min(100, Math.round((xp / xpToNext) * 100));
 
