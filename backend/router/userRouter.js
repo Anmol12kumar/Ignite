@@ -319,4 +319,85 @@ router.post("/reset-password", async (req, res) => {
     }
 });
 
+// Award Badge to User
+router.post("/award-badge", async (req, res) => {
+    const { token, levelNumber } = req.body;
+
+    if (!token || !levelNumber) {
+        return res.status(400).json({ message: "Token and level number are required" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+        const userId = decoded._id;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // Define badges for each level
+        const badgeData = {
+            1: { title: "Level 1 Master", icon: "🥉", description: "Completed Level 1 with 75+ score" },
+            2: { title: "Level 2 Expert", icon: "🥈", description: "Completed Level 2 with 75+ score" },
+            3: { title: "Level 3 Champion", icon: "🥇", description: "Completed Level 3 with 75+ score" },
+            4: { title: "Level 4 Maestro", icon: "🎖️", description: "Completed Level 4 with 75+ score" },
+            5: { title: "Level 5 Wizard", icon: "✨", description: "Completed Level 5 with 75+ score" },
+            6: { title: "Level 6 Sage", icon: "🧙", description: "Completed Level 6 with 75+ score" },
+            7: { title: "Level 7 Prodigy", icon: "🌟", description: "Completed Level 7 with 75+ score" },
+            8: { title: "Level 8 Virtuoso", icon: "🎯", description: "Completed Level 8 with 75+ score" },
+            9: { title: "Level 9 Genius", icon: "🧠", description: "Completed Level 9 with 75+ score" },
+            10: { title: "Level 10 Legend", icon: "👑", description: "Completed Level 10 with 75+ score" },
+            'boss': { title: "Boss Slayer", icon: "🔥", description: "Defeated the Boss Challenge" }
+        };
+
+        const badge = badgeData[levelNumber];
+        if (!badge) {
+            return res.status(400).json({ message: "Invalid level number" });
+        }
+
+        // Check if user already has this badge
+        const alreadyHasBadge = user.badges.some(b => b.title === badge.title);
+        if (alreadyHasBadge) {
+            return res.status(200).json({ 
+                success: true, 
+                message: "Badge already earned", 
+                badges: user.badges 
+            });
+        }
+
+        // Award badge
+        user.badges.push({
+            badgeId: `level_${levelNumber}`,
+            title: badge.title,
+            icon: badge.icon,
+            description: badge.description,
+            earnedAt: new Date()
+        });
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: `🎉 Badge earned: ${badge.title}`,
+            badge: user.badges[user.badges.length - 1],
+            totalBadges: user.badges.length
+        });
+    } catch (err) {
+        console.error("Award badge error:", err);
+        res.status(500).json({ error: err.message || "Failed to award badge" });
+    }
+});
+
+// Get User Badges
+router.get("/badges/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json({ badges: user.badges || [] });
+    } catch (err) {
+        console.error("Get badges error:", err);
+        res.status(500).json({ error: err.message || "Failed to fetch badges" });
+    }
+});
+
 module.exports = router;

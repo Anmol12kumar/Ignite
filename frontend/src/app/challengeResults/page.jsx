@@ -29,6 +29,23 @@ const ChallengeResults = () => {
                 if (overall >= 75) {
                     const currentHighest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
                     const currentLevelNum = parseInt(level, 10) || 1;
+                    const token = localStorage.getItem("token");
+                    
+                    // Award badge for completing level with 75+ score
+                    if (token) {
+                        fetch("http://localhost:5000/user/award-badge", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ token, levelNumber: currentLevelNum })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                toast.success(data.message, { duration: 3000 });
+                            }
+                        })
+                        .catch(err => console.error("Failed to award badge:", err));
+                    }
                     
                     if (currentLevelNum >= currentHighest) {
                         const nextLevel = currentLevelNum + 1;
@@ -36,7 +53,6 @@ const ChallengeResults = () => {
                         toast.success(`🎉 Level ${nextLevel} Unlocked! Ready for the next challenge?`, { duration: 4000 });
                         
                         // Save unlocked level to backend
-                        const token = localStorage.getItem("token");
                         if (token) {
                             fetch("http://localhost:5000/user/unlock-level", {
                                 method: "POST",

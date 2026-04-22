@@ -12,7 +12,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
             : score >= 50
                 ? "text-yellow-400"
                 : "text-red-500";
-                
+
     return (
         <div className="mt-6 p-6 rounded-xl border border-gray-700 bg-gray-900 animate-slideUp hover:shadow-lg hover:border-emerald-400/30 transition-all duration-300">
             <p className="text-sm text-gray-400 mb-2">Your Score</p>
@@ -82,13 +82,13 @@ const Challenge = () => {
     const evaluate = async () => {
         setSubmitting(true);
         const q = questions[activeQ];
-        
+
         const evaluateWithRetry = async (retries = 3) => {
             for (let attempt = 1; attempt <= retries; attempt++) {
                 try {
                     const controller = new AbortController();
                     const timeout = setTimeout(() => controller.abort(new Error("Request timeout after 30s")), 30000);
-                    
+
                     try {
                         const res = await fetch("http://localhost:5000/evaluate", {
                             method: "POST",
@@ -114,7 +114,7 @@ const Challenge = () => {
                             }
                             throw new Error(`API Error ${res.status}: ${errorText}`);
                         }
-                        
+
                         return await res.json();
                     } finally {
                         clearTimeout(timeout);
@@ -134,10 +134,10 @@ const Challenge = () => {
         try {
             const data = await evaluateWithRetry();
             const pct = data.pct;
-            
+
             setScores((prev) => ({ ...prev, [activeQ]: pct }));
             setEvaluations((prev) => ({ ...prev, [activeQ]: data.suggestions }));
-            
+
             if (pct >= 50 && activeQ === unlockedUpTo && activeQ < questions.length - 1) {
                 setUnlockedUpTo(activeQ + 1);
             }
@@ -154,9 +154,9 @@ const Challenge = () => {
                 if (hit) score++;
             });
             const pct = Math.round((score / q.keyPoints.length) * 100);
-            
+
             setScores((prev) => ({ ...prev, [activeQ]: pct }));
-            
+
             if (pct >= 50 && activeQ === unlockedUpTo && activeQ < questions.length - 1) {
                 setUnlockedUpTo(activeQ + 1);
             }
@@ -170,110 +170,110 @@ const Challenge = () => {
         setUserPrompt("");
     };
 
-    return (
-        <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-            {/* Header */}
-            <header className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-                <Link
-                    href={`/Assessment`}
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                    ← Back to Practice
-                </Link>
-                <h1 className="text-lg font-semibold">
-                    Level {level} —{" "}
-                    <span className="text-emerald-400">Challenge</span>
-                </h1>
-                <span className="text-xs text-gray-400">
-                    {Object.keys(scores).length}/{questions.length} answered
-                </span>
-            </header>
+            return (
+                <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+                    {/* Header */}
+                    <header className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
+                        <Link
+                            href={`/Assessment`}
+                            className="text-sm text-gray-400 hover:text-white transition-colors"
+                        >
+                            ← Back to Practice
+                        </Link>
+                        <h1 className="text-lg font-semibold">
+                            Level {level} —{" "}
+                            <span className="text-emerald-400">Challenge</span>
+                        </h1>
+                        <span className="text-xs text-gray-400">
+                            {Object.keys(scores).length}/{questions.length} answered
+                        </span>
+                    </header>
 
-            <div className="flex flex-1 overflow-hidden">
-                {/* Left — Question List */}
-                <aside className="w-72 border-r border-gray-700 p-4 overflow-y-auto flex-shrink-0">
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-4">
-                        Questions
-                    </p>
-                    {questions.map((q, i) => {
-                        const locked = i > unlockedUpTo;
-                        const answered = scores[i] !== undefined;
-                        return (
-                            <button
-                                key={q.id}
-                                disabled={locked}
-                                onClick={() => {
-                                    if (!locked) {
-                                        setActiveQ(i);
-                                        if (scores[i] === undefined) setUserPrompt("");
-                                    }
-                                }}
-                                className={`w-full text-left p-3 rounded-lg mb-2 transition-all text-sm flex items-center gap-3 ${locked
-                                        ? "opacity-40 cursor-not-allowed bg-gray-800 text-gray-500"
-                                        : activeQ === i
-                                            ? "bg-emerald-900/20 border border-emerald-400 text-white"
-                                            : "hover:bg-gray-700 text-gray-400"
-                                    }`}
-                            >
-                                <span
-                                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${answered
-                                            ? scores[i] >= 50
-                                                ? "bg-emerald-900/20 text-emerald-400"
-                                                : "bg-red-900/20 text-red-500"
-                                            : locked
-                                                ? "bg-gray-700 text-gray-500"
-                                                : "bg-gray-600 text-white"
-                                        }`}
-                                >
-                                    {locked ? "🔒" : answered ? (scores[i] >= 50 ? "✓" : "✗") : i + 1}
-                                </span>
-                                <span className="line-clamp-2">
-                                    {locked ? "Locked" : `Question ${i + 1}`}
-                                </span>
-                            </button>
-                        );
-                    })}
-                </aside>
+                    <div className="flex flex-1 overflow-hidden">
+                        {/* Left — Question List */}
+                        <aside className="w-72 border-r border-gray-700 p-4 overflow-y-auto flex-shrink-0">
+                            <p className="text-xs text-gray-400 uppercase tracking-wider mb-4">
+                                Questions
+                            </p>
+                            {questions.map((q, i) => {
+                                const locked = i > unlockedUpTo;
+                                const answered = scores[i] !== undefined;
+                                return (
+                                    <button
+                                        key={q.id}
+                                        disabled={locked}
+                                        onClick={() => {
+                                            if (!locked) {
+                                                setActiveQ(i);
+                                                if (scores[i] === undefined) setUserPrompt("");
+                                            }
+                                        }}
+                                        className={`w-full text-left p-3 rounded-lg mb-2 transition-all text-sm flex items-center gap-3 ${locked
+                                            ? "opacity-40 cursor-not-allowed bg-gray-800 text-gray-500"
+                                            : activeQ === i
+                                                ? "bg-emerald-900/20 border border-emerald-400 text-white"
+                                                : "hover:bg-gray-700 text-gray-400"
+                                            }`}
+                                    >
+                                        <span
+                                            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${answered
+                                                ? scores[i] >= 50
+                                                    ? "bg-emerald-900/20 text-emerald-400"
+                                                    : "bg-red-900/20 text-red-500"
+                                                : locked
+                                                    ? "bg-gray-700 text-gray-500"
+                                                    : "bg-gray-600 text-white"
+                                                }`}
+                                        >
+                                            {locked ? "🔒" : answered ? (scores[i] >= 50 ? "✓" : "✗") : i + 1}
+                                        </span>
+                                        <span className="line-clamp-2">
+                                            {locked ? "Locked" : `Question ${i + 1}`}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </aside>
 
-                {/* Right — Active Question */}
-                <main className="flex-1 p-8 overflow-y-auto flex flex-col items-center">
-                    <div className="w-full max-w-2xl">
-                        <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">
-                            Question {activeQ + 1} of {questions.length}
-                        </p>
-                        <h2 className="text-xl font-semibold leading-relaxed mb-6">
-                            {questions[activeQ].question}
-                        </h2>
+                        {/* Right — Active Question */}
+                        <main className="flex-1 p-8 overflow-y-auto flex flex-col items-center">
+                            <div className="w-full max-w-2xl">
+                                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+                                    Question {activeQ + 1} of {questions.length}
+                                </p>
+                                <h2 className="text-xl font-semibold leading-relaxed mb-6">
+                                    {questions[activeQ].question}
+                                </h2>
 
-                        {scores[activeQ] === undefined ? (
-                            <>
-                                <textarea
-                                    className="w-full h-48 bg-gray-800 border border-gray-700 rounded-lg p-4 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                                    placeholder="Write your prompt here…"
-                                    value={userPrompt}
-                                    onChange={(e) => setUserPrompt(e.target.value)}
-                                />
-                                <Button
-                                    className="mt-4 w-full bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-lg"
-                                    disabled={!userPrompt.trim() || submitting}
-                                    onClick={evaluate}
-                                >
-                                    {submitting ? "Evaluating…" : "Submit Prompt"}
-                                </Button>
-                            </>
-                        ) : (
-                            <ScoreCard
-                                score={scores[activeQ]}
-                                onNext={goToNext}
-                                isLast={activeQ === questions.length - 1}
-                                suggestions={evaluations[activeQ]}
-                            />
-                        )}
+                                {scores[activeQ] === undefined ? (
+                                    <>
+                                        <textarea
+                                            className="w-full h-48 bg-gray-800 border border-gray-700 rounded-lg p-4 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                                            placeholder="Write your prompt here…"
+                                            value={userPrompt}
+                                            onChange={(e) => setUserPrompt(e.target.value)}
+                                        />
+                                        <Button
+                                            className="mt-4 w-full bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-lg"
+                                            disabled={!userPrompt.trim() || submitting}
+                                            onClick={evaluate}
+                                        >
+                                            {submitting ? "Evaluating…" : "Submit Prompt"}
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <ScoreCard
+                                        score={scores[activeQ]}
+                                        onNext={goToNext}
+                                        isLast={activeQ === questions.length - 1}
+                                        suggestions={evaluations[activeQ]}
+                                    />
+                                )}
+                            </div>
+                        </main>
                     </div>
-                </main>
-            </div>
-        </div>
-    );
-};
+                </div>
+            );
+        };
 
-export default Challenge;
+        export default Challenge;
