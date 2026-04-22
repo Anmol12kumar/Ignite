@@ -47,7 +47,17 @@ router.post('/update', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const topPlayers = await Leaderboard.find().sort({ totalXP: -1 }).limit(50);
+        const topUsers = await User.find().sort({ xp: -1 }).limit(50);
+        
+        // Map the user objects to the structure the leaderboard frontend expects
+        const topPlayers = topUsers.map(user => ({
+            userId: user._id,
+            name: user.name,
+            totalXP: user.xp,
+            level: user.level,
+            bestStreak: user.streak || 0
+        }));
+
         res.status(200).json(topPlayers);
     } catch (err) {
         res.status(500).json({ error: err.message });
