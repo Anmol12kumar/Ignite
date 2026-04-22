@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -70,6 +70,84 @@ const Challenge2 = () => {
     const [scores, setScores] = useState({}); // { qIndex: score }
     const [evaluations, setEvaluations] = useState({}); // { qIndex: suggestions_string }
     const [submitting, setSubmitting] = useState(false);
+
+    const [isListening, setIsListening] = useState(false);
+    const [voiceStatus, setVoiceStatus] = useState("");
+    const recognitionRef = useRef(null);
+
+    // Initialize speech recognition
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = "en-US";
+
+                recognition.onstart = () => {
+                    setIsListening(true);
+                    setVoiceStatus("🎤 Listening...");
+                };
+
+                recognition.onresult = (event) => {
+                    let interimTranscript = "";
+                    let finalTranscript = "";
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + " ";
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        setUserPrompt((prev) => prev + finalTranscript);
+                    }
+
+                    if (interimTranscript) {
+                        setVoiceStatus(`🎤 ${interimTranscript}`);
+                    }
+                };
+
+                recognition.onerror = (event) => {
+                    setVoiceStatus(`❌ Error: ${event.error}`);
+                    console.error("Speech recognition error:", event.error);
+                };
+
+                recognition.onend = () => {
+                    setIsListening(false);
+                    setVoiceStatus("");
+                };
+
+                recognitionRef.current = recognition;
+            }
+        }
+
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.abort();
+            }
+        };
+    }, []);
+
+    const toggleVoiceInput = () => {
+        if (!recognitionRef.current) {
+            setVoiceStatus("❌ Voice recognition not supported");
+            return;
+        }
+
+        if (isListening) {
+            recognitionRef.current.stop();
+            setIsListening(false);
+            setVoiceStatus("");
+        } else {
+            recognitionRef.current.start();
+        }
+    };
+
 
     useEffect(() => {
         if (Object.keys(scores).length > 0) {
@@ -247,12 +325,42 @@ const Challenge2 = () => {
 
                         {scores[activeQ] === undefined ? (
                             <>
-                                <textarea
-                                    className="w-full h-48 bg-gray-800 border border-gray-700 rounded-lg p-4 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                                    placeholder="Write your prompt here…"
-                                    value={userPrompt}
-                                    onChange={(e) => setUserPrompt(e.target.value)}
-                                />
+                                <div className="flex gap-3 w-full">
+                                        <textarea
+                                            className="flex-1 h-48 bg-gray-800 border border-gray-700 rounded-lg p-4 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                                            placeholder="Write your prompt here…"
+                                            value={userPrompt}
+                                            onChange={(e) => setUserPrompt(e.target.value)}
+                                        />
+                                        <div className="flex flex-col gap-2">
+                                            <button
+                                                onClick={toggleVoiceInput}
+                                                className={`p-3 rounded-lg border-2 transition-all duration-300 flex items-center justify-center h-14 w-14 hover:-translate-y-1 hover:shadow-lg active:scale-95 ${
+                                                    isListening
+                                                        ? "border-red-500 bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:shadow-red-500/20 animate-pulse"
+                                                        : "border-blue-500/50 bg-blue-500/10 text-blue-400 hover:border-blue-400 hover:bg-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20"
+                                                }`}
+                                                title={isListening ? "Click to stop recording" : "Click to enable voice input"}
+                                            >
+                                                <span className="text-xl">{isListening ? "🎤" : "🎙️"}</span>
+                                            </button>
+
+                                            {/* Voice Status Display */}
+                                            {voiceStatus && (
+                                                <div className="p-2 rounded-lg bg-blue-900/30 border border-blue-500/30 text-center max-w-[80px]">
+                                                    <p className="text-xs text-blue-300 truncate">{voiceStatus}</p>
+                                                </div>
+                                            )}
+
+                                            {/* Voice Help Text */}
+                                            {!isListening && (
+                                                <div className="text-xs text-gray-500 text-center">
+                                                    <p>Click to activate</p>
+                                                    <p>voice input</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 <Button
                                     className="mt-4 w-full bg-emerald-500 text-black font-semibold hover:bg-emerald-600 shadow-lg"
                                     disabled={!userPrompt.trim() || submitting}
