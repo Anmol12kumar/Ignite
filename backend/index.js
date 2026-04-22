@@ -4,7 +4,7 @@ const userRouter = require("./router/userRouter");
 const evaluateRouter = require("./router/evaluateRouter");
 const communityWallRouter = require("./router/communityWallRouter");
 
-const User = require("./models/userModel"); // 1. User Model ko import karein
+
 
 const leaderboardRouter = require("./router/leaderboardRouter");
 

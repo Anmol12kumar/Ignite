@@ -52,7 +52,7 @@ const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
                 </Button>
             )}
             {isLast && score >= 50 && (
-                <Link href="/challengeResults">
+                <Link href="/challengeResults?level=boss">
                     <Button className="mt-4 w-full bg-orange-600 text-white font-semibold hover:bg-orange-700 shadow-lg shadow-orange-600/30">
                         🎉 Boss Defeated — Go to results
                     </Button>

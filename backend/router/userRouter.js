@@ -223,38 +223,48 @@ router.post("/forgot-password", async (req, res) => {
         // Create reset link
         const resetLink = `http://localhost:3000/reset-password?token=${resetToken}&email=${email}`;
 
-        // Send email
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: "🔐 Ignite - Password Reset Request",
-            html: `
-                <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                    <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-                        <h2 style="color: #10b981; text-align: center;">Ignite</h2>
-                        <h3 style="color: #333;">Password Reset Request</h3>
-                        <p style="color: #666;">Hello ${user.name},</p>
-                        <p style="color: #666;">We received a request to reset your password. Click the button below to create a new password.</p>
-                        
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="${resetLink}" style="background-color: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                                Reset Password
-                            </a>
+        // For presentation purposes: Always log the reset link to the backend console so you can grab it easily!
+        console.log("\n=======================================================");
+        console.log(`🔐 PASSWORD RESET LINK GENERATED FOR: ${email}`);
+        console.log(resetLink);
+        console.log("=======================================================\n");
+
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+            // Send email
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: "🔐 Ignite - Password Reset Request",
+                html: `
+                    <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                        <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                            <h2 style="color: #10b981; text-align: center;">Ignite</h2>
+                            <h3 style="color: #333;">Password Reset Request</h3>
+                            <p style="color: #666;">Hello ${user.name},</p>
+                            <p style="color: #666;">We received a request to reset your password. Click the button below to create a new password.</p>
+                            
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${resetLink}" style="background-color: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                    Reset Password
+                                </a>
+                            </div>
+
+                            <p style="color: #999; font-size: 12px;">Or copy this link: <br/><a href="${resetLink}" style="color: #10b981;">${resetLink}</a></p>
+                            
+                            <p style="color: #666; font-size: 14px;">This link will expire in 15 minutes.</p>
+                            <p style="color: #666; font-size: 14px;">If you didn't request a password reset, please ignore this email.</p>
+                            
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <p style="color: #999; font-size: 12px; text-align: center;">© 2024 Ignite. All rights reserved.</p>
                         </div>
-
-                        <p style="color: #999; font-size: 12px;">Or copy this link: <br/><a href="${resetLink}" style="color: #10b981;">${resetLink}</a></p>
-                        
-                        <p style="color: #666; font-size: 14px;">This link will expire in 15 minutes.</p>
-                        <p style="color: #666; font-size: 14px;">If you didn't request a password reset, please ignore this email.</p>
-                        
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                        <p style="color: #999; font-size: 12px; text-align: center;">© 2024 Ignite. All rights reserved.</p>
                     </div>
-                </div>
-            `
-        };
+                `
+            };
 
-        await transporter.sendMail(mailOptions);
+            await transporter.sendMail(mailOptions);
+        } else {
+            console.log("⚠️ EMAIL_USER not found in .env! Skipping actual email delivery but returning success to frontend.");
+        }
 
         res.status(200).json({ 
             success: true, 

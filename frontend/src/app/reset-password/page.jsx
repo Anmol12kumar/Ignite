@@ -6,7 +6,7 @@ import { useFormik } from "formik";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 const resetPasswordSchema = Yup.object().shape({
     newPassword: Yup.string()
@@ -17,7 +17,7 @@ const resetPasswordSchema = Yup.object().shape({
         .required("Confirm password is required"),
 });
 
-const ResetPassword = () => {
+const ResetPasswordForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
@@ -152,6 +152,14 @@ const ResetPassword = () => {
                 </p>
             </div>
         </div>
+    );
+};
+
+const ResetPassword = () => {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">Loading...</div>}>
+            <ResetPasswordForm />
+        </Suspense>
     );
 };
 
