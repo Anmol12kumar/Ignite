@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getPersonalizedWelcome } from "@/data/personalizedQuestions";
 
 const levels = [
     { level: 1, name: "Gatekeeper", icon: "🚪", unlocked: true },
@@ -26,7 +28,7 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => {
                     : "border-gray-700 bg-gray-900/40 opacity-50 cursor-not-allowed"
                 : unlocked
                     ? "border-emerald-400/40 bg-gray-900 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] cursor-pointer group"
-                    : "border-gary-700 bg-gary-900/40 opacity-50 cursor-not-allowed"
+                    : "border-gray-700 bg-gray-900/40 opacity-50 cursor-not-allowed"
             }`}
     >
         {/* Lock overlay */}
@@ -74,38 +76,53 @@ const LevelCard = ({ level, name, icon, unlocked, boss }) => {
         if (level === 1) {
             return <Link href="/Assessment">{cardContent}</Link>;
         }
-        if (!boss) {
-            return <Link href={`/Assessment${level}`}>{cardContent}</Link>;
+        if (boss) {
+            return <Link href="/AssessmentBoss">{cardContent}</Link>;
         }
+        return <Link href={`/Assessment${level}`}>{cardContent}</Link>;
     }
 
     return cardContent;
 };
 
 const Challenges = () => {
+    const router = useRouter();
     const [unlockedLevel, setUnlockedLevel] = useState(1);
+    const [userProfile, setUserProfile] = useState(null);
 
     useEffect(() => {
-        // Fetch unlocked level on mount
-        const fetchUnlockedLevel = async () => {
+        // Fetch unlocked level and profile on mount
+        const fetchData = async () => {
             const token = localStorage.getItem("token");
+            const profession = localStorage.getItem("profession");
+            const domain = localStorage.getItem("domain");
+            const experienceLevel = localStorage.getItem("experienceLevel");
+            const name = localStorage.getItem("userName");
+            const profileComplete = localStorage.getItem("profileComplete") === "true";
+
+            // Guard: If profile not complete, redirect to onboarding
+            if (token && !profileComplete) {
+                router.push("/onboarding");
+                return;
+            }
+
+            if (profession) {
+                setUserProfile({ profession, domain, experienceLevel, name });
+            }
             
-            // Try to fetch from backend first
+            // Sync with backend progress
             if (token) {
                 try {
-                    // Decode token to get user ID
                     const base64Url = token.split('.')[1];
                     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                     const decoded = JSON.parse(atob(base64));
                     const userId = decoded._id;
                     
-                    // Fetch user progress from backend
                     const res = await fetch(`http://localhost:5000/user/progress/${userId}`);
                     if (res.ok) {
                         const data = await res.json();
                         const highest = data.highestUnlockedLevel || 1;
                         setUnlockedLevel(highest);
-                        // Sync with localStorage
                         localStorage.setItem("highestUnlockedLevel", String(highest));
                         return;
                     }
@@ -114,25 +131,28 @@ const Challenges = () => {
                 }
             }
             
-            // Fallback to localStorage
             const highest = parseInt(localStorage.getItem("highestUnlockedLevel") || "1", 10);
             setUnlockedLevel(highest);
         };
         
-        fetchUnlockedLevel();
+        fetchData();
         
-        // Also refetch when page becomes visible (user returns from another page)
         const handleVisibilityChange = () => {
             if (document.visibilityState === "visible") {
-                fetchUnlockedLevel();
+                fetchData();
             }
         };
         
         document.addEventListener("visibilitychange", handleVisibilityChange);
         return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-    }, []);
+    }, [router]);
 
     const maxLevelInt = Math.min(unlockedLevel, 11);
+    
+    // Get personalized welcome message
+    const welcome = userProfile 
+        ? getPersonalizedWelcome(userProfile.profession, userProfile.domain, userProfile.experienceLevel)
+        : null;
 
     return (
         <div className="min-h-screen bg-black">
@@ -140,61 +160,84 @@ const Challenges = () => {
             <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-700 bg-black/80 backdrop-blur-xl">
                 <div className="container px-20 flex h-14 items-center justify-between">
                     <Link href="/" className="flex items-center gap-2">
-                        <div className="h-7 w-7 bg-emerald-600 rounded-md bg-primary flex items-center justify-center">
-                            <span className="text-primary-foreground font-bold text-xs font-mono">I</span>
+                        <div className="h-7 w-7 bg-emerald-600 rounded-md flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                            <span className="text-white font-bold text-xs font-mono">I</span>
                         </div>
                         <span className="font-semibold tracking-tight text-white">Ignite</span>
                     </Link>
-                    <Link href="/user/profile">
-                        <Button className="px-3 py-1 text-sm rounded-lg bg-transparent text-gray-300 hover:bg-bg-gray-800">Profile</Button>
-                    </Link>
+                    <div className="flex items-center gap-4">
+                        <Link href="/concepts">
+                            <span className="text-sm text-gray-400 hover:text-emerald-400 transition-colors mr-2 cursor-pointer">Concepts</span>
+                        </Link>
+                        {userProfile && (
+                            <div className="hidden sm:flex flex-col items-end">
+                                <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Personalized for</span>
+                                <span className="text-xs text-gray-300 font-medium capitalize">{userProfile.profession} · {userProfile.domain}</span>
+                            </div>
+                        )}
+
+                        <Link href="/user/profile">
+                            <Button className="px-3 py-1 text-sm rounded-lg bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700">Profile</Button>
+                        </Link>
+                    </div>
                 </div>
             </nav>
 
             <main className="container pt-28 pb-20">
                 {/* Header */}
-                <div className="text-center mb-14">
+                <div className="text-center mb-14 animate-in fade-in slide-in-from-top-4 duration-1000">
                     <span className="font-mono text-[13px] tracking-[0.25em] uppercase text-emerald-400 mb-3 block">
                         Challenge Arena
                     </span>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
-                        Master the Art of Prompting
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white leading-tight">
+                        {userProfile?.name ? `Welcome back, ${userProfile.name}` : "Master the Art of Prompting"}
                     </h1>
-                    <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base">
-                        Complete each challenge to unlock the next. Conquer all levels to face the Boss.
-                    </p>
+                    
+                    {welcome ? (
+                        <div className="max-w-2xl mx-auto space-y-2">
+                            <p className="text-lg text-emerald-100/90 font-medium">
+                                {welcome.headline}
+                            </p>
+                            <p className="text-gray-400 text-sm italic">
+                                {welcome.subtext}
+                            </p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-400 max-w-xl mx-auto text-sm sm:text-base">
+                            Complete each challenge to unlock the next. Conquer all levels to face the Boss.
+                        </p>
+                    )}
                 </div>
 
                 {/* Progress bar */}
-                <div className="max-w-md mx-auto mb-14">
+                <div className="max-w-md mx-auto mb-14 px-4">
                     <div className="flex justify-between text-xs font-mono text-emerald-400 mb-2">
-                        <span>Progress</span>
+                        <span>Curriculum Progress</span>
                         <span>{maxLevelInt} / 11</span>
                     </div>
-                    <div className="h-2 rounded-full bg-gray-800 overflow-hidden">
+                    <div className="h-2 rounded-full bg-gray-800 overflow-hidden border border-gray-700/50">
                         <div
-                            className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.6)] transition-all duration-500"
+                            className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-1000"
                             style={{ width: `${(maxLevelInt / 11) * 100}%` }}
                         />
                     </div>
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto px-4">
+                    {levels.filter((l) => !l.boss).map((l) => (
+                        <LevelCard key={l.level} {...l} unlocked={l.level <= unlockedLevel} />
+                    ))}
+                </div>
 
-                {levels.filter((l) => !l.boss).map((l) => (
-                    <LevelCard key={l.level} {...l} unlocked={l.level <= unlockedLevel} />
-                ))}
-            </div>
-
-            {/* Boss card */}
-            <div className="max-w-sm mx-auto mt-14">
-                {levels.filter((l) => l.boss).map((l) => (
-                    <LevelCard key="boss" {...l} unlocked={unlockedLevel > 10} />
-                ))}
-            </div>
-        </main>
-    </div>
+                {/* Boss card */}
+                <div className="max-w-sm mx-auto mt-14 px-4">
+                    {levels.filter((l) => l.boss).map((l) => (
+                        <LevelCard key="boss" {...l} unlocked={unlockedLevel > 10} />
+                    ))}
+                </div>
+            </main>
+        </div>
     );
 };
 

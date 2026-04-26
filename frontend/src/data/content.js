@@ -271,4 +271,5 @@ export const navLinks = [
     { label: "What", href: "#what" },
     { label: "Techniques", href: "#techniques" },
     { label: "Learn", href: "#how-we-help" },
+    { label: "Concepts", href: "/concepts" },
 ];

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { level6ChallengeQuestions } from "@/data/level6challengequestions";
+import { getPersonalizedChallengeQuestions } from "@/data/personalizedQuestions";
 
 const ScoreCard = ({ score, onNext, isLast, suggestions }) => {
     const color =
@@ -74,6 +75,19 @@ const Challenge6 = () => {
     const [isListening, setIsListening] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState("");
     const recognitionRef = useRef(null);
+    const [userProfile, setUserProfile] = useState({ profession: 'student', domain: 'general', experienceLevel: 'beginner' });
+    const [questions, setQuestions] = useState(level6ChallengeQuestions);
+
+    // Load personalization from localStorage
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const profession = localStorage.getItem("profession") || "student";
+            const domain = localStorage.getItem("domain") || "general";
+            const experienceLevel = localStorage.getItem("experienceLevel") || "beginner";
+            setUserProfile({ profession, domain, experienceLevel });
+            setQuestions(getPersonalizedChallengeQuestions(level6ChallengeQuestions, profession, domain));
+        }
+    }, []);
 
     // Initialize speech recognition
     useEffect(() => {
@@ -154,9 +168,6 @@ const Challenge6 = () => {
             localStorage.setItem("challengeScores", JSON.stringify(scores));
         }
     }, [scores]);
-
-    const questions = level6ChallengeQuestions;
-
     const evaluate = async () => {
         setSubmitting(true);
         const q = questions[activeQ];
@@ -176,7 +187,10 @@ const Challenge6 = () => {
                                 question: q.question,
                                 sampleAnswer: q.sampleAnswer || "",
                                 keyPoints: q.keyPoints,
-                                token: localStorage.getItem("token")
+                                token: localStorage.getItem("token"),
+                                profession: userProfile.profession,
+                                domain: userProfile.domain,
+                                experienceLevel: userProfile.experienceLevel,
                             }),
                             signal: controller.signal
                         });
@@ -258,10 +272,20 @@ const Challenge6 = () => {
                 >
                     ← Back to Practice
                 </Link>
-                <h1 className="text-lg font-semibold">
+                <div className="flex items-center">
+                            <h1 className="text-lg font-semibold">
                     Level {level} —{" "}
                     <span className="text-emerald-400">Challenge</span>
                 </h1>
+                        {/* Personalization badge */}
+                        {userProfile.profession && userProfile.profession !== "student" && (
+                            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 ml-4">
+                                <span className="text-[10px] text-indigo-400 font-medium capitalize">
+                                    ✨ {userProfile.profession} · {userProfile.domain}
+                                </span>
+                            </div>
+                        )}
+                        </div>
                 <span className="text-xs text-gray-400">
                     {Object.keys(scores).length}/{questions.length} answered
                 </span>

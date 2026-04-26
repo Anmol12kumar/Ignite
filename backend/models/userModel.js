@@ -8,6 +8,21 @@ const mySchema = new Schema(
         avatar: { type: String, default: null },
         
         role: { type: String, enum: ["user", "admin"], default: "user" },
+
+        // Personalization fields
+        profession: { 
+            type: String, 
+            enum: ["student", "teacher", "developer", "marketer", "researcher", "healthcare", "legal-finance", "other"],
+            default: "student" 
+        },
+        domain: { type: String, default: "general" }, // e.g., "science", "business", "arts"
+        experienceLevel: { 
+            type: String, 
+            enum: ["beginner", "intermediate", "advanced"],
+            default: "beginner" 
+        },
+        profileComplete: { type: Boolean, default: false },
+
         score: { type: Number, default: 0 }, // Dashboard par dikhane ke liye total score
         level: { type: Number, default: 1 },
         xp: { type: Number, default: 0 },

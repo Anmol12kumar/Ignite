@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ChatButton from "@/components/ChatButton";
 import { level9Questions } from "@/data/level9Questions";
+import { getPersonalizedQuestions } from "@/data/personalizedQuestions";
 
 const Assessment9 = () => {
     const [selectedQ, setSelectedQ] = useState(null);
@@ -17,6 +18,20 @@ const Assessment9 = () => {
     const containerRef = useRef(null);
     const dragging = useRef(false);
     const recognitionRef = useRef(null);
+    const [userProfile, setUserProfile] = useState({ profession: 'student', domain: 'general', experienceLevel: 'beginner' });
+    const [questions, setQuestions] = useState(level9Questions);
+
+    // Load user personalization profile from localStorage and personalize questions
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const profession = localStorage.getItem("profession") || "student";
+            const domain = localStorage.getItem("domain") || "general";
+            const experienceLevel = localStorage.getItem("experienceLevel") || "beginner";
+            const profile = { profession, domain, experienceLevel };
+            setUserProfile(profile);
+            setQuestions(getPersonalizedQuestions(level9Questions, profession, domain));
+        }
+    }, []);
 
     // Initialize speech recognition
     useEffect(() => {
@@ -112,7 +127,7 @@ const Assessment9 = () => {
 
     const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
-        const q = level9Questions.find((q) => q.id === selectedQ);
+        const q = questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
         setIsEvaluating(true);
@@ -133,7 +148,10 @@ const Assessment9 = () => {
                                 question: q.question,
                                 sampleAnswer: q.sampleAnswer,
                                 keyPoints: q.keyPoints,
-                                token: localStorage.getItem("token")
+                                token: localStorage.getItem("token"),
+                                profession: userProfile.profession,
+                                domain: userProfile.domain,
+                                experienceLevel: userProfile.experienceLevel,
                             }),
                             signal: controller.signal
                         });
@@ -207,10 +225,10 @@ const Assessment9 = () => {
         }
     };
 
-    const activeQuestion = level9Questions.find((q) => q.id === selectedQ);
-    const completionPct = Math.round((completedQs.size / level9Questions.length) * 100);
-    const isLastQuestion = selectedQ === level9Questions[level9Questions.length - 1].id;
-    const allCompleted = completedQs.size === level9Questions.length;
+    const activeQuestion = questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / questions.length) * 100);
+    const isLastQuestion = selectedQ === level9Questions[questions.length - 1].id;
+    const allCompleted = completedQs.size === questions.length;
 
     return (
         <div className="h-screen flex flex-col bg-black text-white">
@@ -227,11 +245,19 @@ const Assessment9 = () => {
                             <span className="text-lg">🚪</span>
                             <span className="font-semibold tracking-tight">Level 9 — Puzzle Prompt Challenge</span>
                         </div>
+                        {/* Personalization badge */}
+                        {userProfile.profession && userProfile.profession !== "student" && (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30">
+                                <span className="text-[10px] text-indigo-400 font-medium capitalize">
+                                    ✨ {userProfile.profession} · {userProfile.domain}
+                                </span>
+                            </div>
+                        )}
                     </div>
                     {/* Progress bar */}
                     <div className="flex items-center gap-3">
                         <span className="font-mono text-xs text-gray-500">
-                            {completedQs.size}/{level9Questions.length} practiced
+                            {completedQs.size}/{questions.length} practiced
                         </span>
                         <div className="w-32 h-2 rounded-full bg-muted overflow-hidden">
                             <div
@@ -253,8 +279,8 @@ const Assessment9 = () => {
                             Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {level9Questions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(level9Questions[index - 1].id);
+                            {questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
@@ -461,8 +487,8 @@ const Assessment9 = () => {
                                             <p className="text-sm text-emerald-300 mb-4">You've successfully answered this question. You can now attempt the next question.</p>
                                             <Button
                                                 onClick={() => {
-                                                    const currentIndex = level9Questions.findIndex(q => q.id === selectedQ);
-                                                    const nextQ = level9Questions[currentIndex + 1];
+                                                    const currentIndex = questions.findIndex(q => q.id === selectedQ);
+                                                    const nextQ = questions[currentIndex + 1];
                                                     if (nextQ) {
                                                         setSelectedQ(nextQ.id);
                                                         setUserPrompt("");

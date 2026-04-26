@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ChatButton from "@/components/ChatButton";
 import { bosslevelQuestions } from "@/data/bosslevelQuestions";
+import { getPersonalizedQuestions } from "@/data/personalizedQuestions";
 
 const AssessmentBoss = () => {
     const [selectedQ, setSelectedQ] = useState(null);
@@ -17,6 +18,20 @@ const AssessmentBoss = () => {
     const containerRef = useRef(null);
     const dragging = useRef(false);
     const recognitionRef = useRef(null);
+    const [userProfile, setUserProfile] = useState({ profession: 'student', domain: 'general', experienceLevel: 'beginner' });
+    const [questions, setQuestions] = useState(bosslevelQuestions);
+
+    // Load user personalization profile from localStorage and personalize questions
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const profession = localStorage.getItem("profession") || "student";
+            const domain = localStorage.getItem("domain") || "general";
+            const experienceLevel = localStorage.getItem("experienceLevel") || "beginner";
+            const profile = { profession, domain, experienceLevel };
+            setUserProfile(profile);
+            setQuestions(getPersonalizedQuestions(bosslevelQuestions, profession, domain));
+        }
+    }, []);
 
     // Initialize speech recognition
     useEffect(() => {
@@ -112,7 +127,7 @@ const AssessmentBoss = () => {
 
     const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
-        const q = bosslevelQuestions.find((q) => q.id === selectedQ);
+        const q = questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
         setIsEvaluating(true);
@@ -133,7 +148,10 @@ const AssessmentBoss = () => {
                                 question: q.question,
                                 sampleAnswer: q.sampleAnswer,
                                 keyPoints: q.keyPoints,
-                                token: localStorage.getItem("token")
+                                token: localStorage.getItem("token"),
+                                profession: userProfile.profession,
+                                domain: userProfile.domain,
+                                experienceLevel: userProfile.experienceLevel,
                             }),
                             signal: controller.signal
                         });
@@ -207,10 +225,10 @@ const AssessmentBoss = () => {
         }
     };
 
-    const activeQuestion = bosslevelQuestions.find((q) => q.id === selectedQ);
-    const completionPct = Math.round((completedQs.size / bosslevelQuestions.length) * 100);
-    const isLastQuestion = selectedQ === bosslevelQuestions[bosslevelQuestions.length - 1].id;
-    const allCompleted = completedQs.size === bosslevelQuestions.length;
+    const activeQuestion = questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / questions.length) * 100);
+    const isLastQuestion = selectedQ === bosslevelQuestions[questions.length - 1].id;
+    const allCompleted = completedQs.size === questions.length;
 
     return (
         <div className="h-screen flex flex-col bg-gradient-to-b from-gray-950 via-red-950/40 to-gray-950 text-white">
@@ -227,11 +245,19 @@ const AssessmentBoss = () => {
                             <span className="text-lg">🚪</span>
                             <span className="font-semibold tracking-tight">Boss Level — Smart Kitchen Showdown</span>
                         </div>
+                        {/* Personalization badge */}
+                        {userProfile.profession && userProfile.profession !== "student" && (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30">
+                                <span className="text-[10px] text-indigo-400 font-medium capitalize">
+                                    ✨ {userProfile.profession} · {userProfile.domain}
+                                </span>
+                            </div>
+                        )}
                     </div>
                     {/* Progress bar */}
                     <div className="flex items-center gap-3">
                         <span className="font-mono text-xs text-gray-500">
-                            {completedQs.size}/{bosslevelQuestions.length} practiced
+                            {completedQs.size}/{questions.length} practiced
                         </span>
                         <div className="w-32 h-2 rounded-full bg-red-950/50 overflow-hidden border border-red-800/40">
                             <div
@@ -253,8 +279,8 @@ const AssessmentBoss = () => {
                             ⚔️ Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {bosslevelQuestions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(bosslevelQuestions[index - 1].id);
+                            {questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
@@ -460,8 +486,8 @@ const AssessmentBoss = () => {
                                             <p className="text-sm text-orange-300/80 mb-4">You've defeated this boss challenge! Move on to the next one.</p>
                                             <Button
                                                 onClick={() => {
-                                                    const currentIndex = bosslevelQuestions.findIndex(q => q.id === selectedQ);
-                                                    const nextQ = bosslevelQuestions[currentIndex + 1];
+                                                    const currentIndex = questions.findIndex(q => q.id === selectedQ);
+                                                    const nextQ = questions[currentIndex + 1];
                                                     if (nextQ) {
                                                         setSelectedQ(nextQ.id);
                                                         setUserPrompt("");

@@ -36,14 +36,22 @@ const Login = () => {
                     toast.success("Login successful");
 
                     // 1. Backend se Data nikalna
-                    const { token, role } = res.data;
+                    const { token, role, profession, domain, experienceLevel, name, profileComplete } = res.data;
 
                     // 2. LocalStorage mein values store karna
                     localStorage.setItem("token", token);
                     localStorage.setItem("role", role);
                     localStorage.setItem("userEmail", values.email);
 
+                    // Store personalization fields
+                    if (profession) localStorage.setItem("profession", profession);
+                    if (domain) localStorage.setItem("domain", domain);
+                    if (experienceLevel) localStorage.setItem("experienceLevel", experienceLevel);
+                    if (name) localStorage.setItem("userName", name);
+                    localStorage.setItem("profileComplete", String(!!profileComplete));
+
                     // 3. Fetch user progress from backend
+                    // ... (rest of progress fetch)
                     try {
                         const base64Url = token.split('.')[1];
                         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -53,26 +61,24 @@ const Login = () => {
                         const progressRes = await axios.get(`http://localhost:5000/user/progress/${userId}`);
                         if (progressRes.status === 200) {
                             const { highestUnlockedLevel, xp, level } = progressRes.data;
-                            // Save progress to localStorage to sync with frontend
                             localStorage.setItem("highestUnlockedLevel", String(highestUnlockedLevel));
                             localStorage.setItem("userXP", String(xp));
                             localStorage.setItem("userLevel", String(level));
-                            console.log("Progress loaded from database:", { highestUnlockedLevel, xp, level });
                         }
                     } catch (err) {
                         console.warn("Failed to fetch user progress:", err);
-                        // Fallback to defaults if fetch fails
-                        localStorage.setItem("highestUnlockedLevel", "1");
-                        localStorage.setItem("userXP", "0");
-                        localStorage.setItem("userLevel", "1");
                     }
 
                     // 4. Role ke basis par sahi path par bhejna
                     if (role === "admin") {
-                        router.push("/admin/dashboard"); // Updated Path
+                        router.push("/admin/dashboard");
+                    } else if (!profileComplete) {
+                        router.push("/onboarding");
                     } else {
                         router.push("/Challenges");
                     }
+
+
                 }
             } catch (error) {
                 const errorMsg = error.response?.data?.error || "Invalid email or password";

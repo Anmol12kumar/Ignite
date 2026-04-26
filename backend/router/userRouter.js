@@ -67,8 +67,13 @@ router.post("/login", (req, res) => {
                 token, 
                 role: result.role || "user",
                 streak: result.streak,
-                name: result.name
+                name: result.name,
+                profession: result.profession,
+                domain: result.domain,
+                experienceLevel: result.experienceLevel,
+                profileComplete: result.profileComplete
             });
+
         } else {
             res.status(401).json({ success: false, message: "Invalid Username or Password" });
         }
@@ -184,6 +189,46 @@ router.delete("/delete/:id", (req, res) => {
         res.status(500).json(err);
     });
 });
+
+// Update user personalization profile (profession, domain, experienceLevel)
+router.put("/update-profile/:id", async (req, res) => {
+    const { id } = req.params;
+    const { profession, domain, experienceLevel } = req.body;
+
+    const allowedProfessions = ["student", "teacher", "developer", "marketer", "researcher", "healthcare", "legal-finance", "other"];
+    const allowedLevels = ["beginner", "intermediate", "advanced"];
+
+    if (profession && !allowedProfessions.includes(profession)) {
+        return res.status(400).json({ message: "Invalid profession value" });
+    }
+    if (experienceLevel && !allowedLevels.includes(experienceLevel)) {
+        return res.status(400).json({ message: "Invalid experience level" });
+    }
+
+    try {
+        const updateData = {};
+        if (profession) updateData.profession = profession;
+        if (domain) updateData.domain = domain;
+        if (experienceLevel) updateData.experienceLevel = experienceLevel;
+        updateData.profileComplete = true; // Mark onboarding as complete
+
+        const user = await User.findByIdAndUpdate(id, updateData, { new: true });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.status(200).json({
+            success: true,
+            message: "Profile personalization updated successfully",
+            profession: user.profession,
+            domain: user.domain,
+            experienceLevel: user.experienceLevel,
+            profileComplete: user.profileComplete
+        });
+    } catch (err) {
+        console.error("Update profile error:", err);
+        res.status(500).json({ message: "Failed to update profile" });
+    }
+});
+
 
 // Configure nodemailer
 const transporter = nodemailer.createTransport({

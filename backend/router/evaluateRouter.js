@@ -10,11 +10,36 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 router.post("/", async (req, res) => {
   try {
-    const { userPrompt, question, sampleAnswer, keyPoints, token } = req.body;
+    const { userPrompt, question, sampleAnswer, keyPoints, token, profession, domain, experienceLevel } = req.body;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Build personalization context for Gemini
+    const professionLabel = profession || "student";
+    const domainLabel = domain || "general";
+    const levelLabel = experienceLevel || "beginner";
+
+    const personalizationContext = `
+The user is a ${professionLabel} with a focus on ${domainLabel}. Their experience level is ${levelLabel}.
+Tailor your feedback accordingly:
+- For a beginner: use simple language, avoid jargon, be encouraging.
+- For intermediate: be direct and suggest specific improvements.
+- For advanced: use technical depth, point out subtle nuances.
+- For a teacher: frame suggestions in terms of how they could apply this in teaching.
+- For a developer: tie suggestions to real-world code/system context.
+- For a researcher: emphasize precision, methodology, and evidence-based framing.
+- For a marketer: relate examples to campaigns, copy, and audience targeting.
+- For a healthcare professional: use clinical or patient-communication analogies.
+- For a legal-finance professional: emphasize precision, compliance, and formal tone.
+Adapt the domain-specific examples in your suggestions to be relevant to "${domainLabel}".
+`;
+
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        generationConfig: { responseMimeType: "application/json" }
+    });
 
     const prompt = `You are an AI assistant evaluating an assessment for a "prompt engineering" course.
+
+${personalizationContext}
 
 Question: ${question}
 Expected Key Points: ${keyPoints.join(", ")}
@@ -23,26 +48,38 @@ Sample Answer: ${sampleAnswer}
 User's Attempt: ${userPrompt}
 
 Analyze the User's Attempt based on the Expected Key Points.
-Return ONLY a strictly valid JSON object without any markdown formatting or code blocks with the following structure:
+Return a valid JSON object with this exact structure:
 {
-    "pct": <integer between 0 and 100 representing accuracy score>,
-    "matched": [<array of strings of key points they successfully addressed>],
-    "missed": [<array of strings of key points they missed or failed to effectively address>],
-    "suggestions": "<string providing brief constructive suggestions to correct bugs, fix the prompt, and improve accuracy>"
+    "pct": number (0-100),
+    "matched": string[],
+    "missed": string[],
+    "suggestions": string
 }`;
 
     const result = await model.generateContent(prompt);
     let responseText = result.response.text().trim();
 
-    // Clean markdown backticks if any
-    if (responseText.startsWith("```")) {
-      const matches = responseText.match(/```(?:json)?([\s\S]+?)```/);
-      if (matches) {
-        responseText = matches[1].trim();
-      }
+    // Safety cleanup in case of stray markers
+    responseText = responseText.replace(/^```json\s*/i, "").replace(/\s*```$/i, "");
+    
+    let evaluation;
+    try {
+        evaluation = JSON.parse(responseText);
+    } catch (parseError) {
+        console.error("Primary JSON parse failed, attempting regex recovery. Text:", responseText);
+        // Fallback: try to find the first { and last } to isolate JSON
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            try {
+                evaluation = JSON.parse(jsonMatch[0]);
+            } catch (e) {
+                throw new Error("Failed to parse AI evaluation response as JSON");
+            }
+        } else {
+            throw new Error("No JSON structure found in AI response");
+        }
     }
 
-    const evaluation = JSON.parse(responseText);
 
     let userId = null;
     if (token) {

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { level1Questions } from "@/data/level1Questions";
+import { getPersonalizedQuestions } from "@/data/personalizedQuestions";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ChatButton from "@/components/ChatButton";
@@ -14,9 +15,23 @@ const Assessment = () => {
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState("");
+    const [userProfile, setUserProfile] = useState({ profession: "student", domain: "general", experienceLevel: "beginner" });
+    const [questions, setQuestions] = useState(level1Questions);
     const containerRef = useRef(null);
     const dragging = useRef(false);
     const recognitionRef = useRef(null);
+
+    // Load user personalization profile from localStorage and personalize questions
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const profession = localStorage.getItem("profession") || "student";
+            const domain = localStorage.getItem("domain") || "general";
+            const experienceLevel = localStorage.getItem("experienceLevel") || "beginner";
+            const profile = { profession, domain, experienceLevel };
+            setUserProfile(profile);
+            setQuestions(getPersonalizedQuestions(level1Questions, profession, domain));
+        }
+    }, []);
 
     // Initialize speech recognition
     useEffect(() => {
@@ -112,7 +127,7 @@ const Assessment = () => {
 
     const handleSubmit = async () => {
         if (!userPrompt.trim()) return;
-        const q = level1Questions.find((q) => q.id === selectedQ);
+        const q = questions.find((q) => q.id === selectedQ);
         if (!q) return;
 
         setIsEvaluating(true);
@@ -133,7 +148,10 @@ const Assessment = () => {
                                 question: q.question,
                                 sampleAnswer: q.sampleAnswer,
                                 keyPoints: q.keyPoints,
-                                token: localStorage.getItem("token")
+                                token: localStorage.getItem("token"),
+                                profession: userProfile.profession,
+                                domain: userProfile.domain,
+                                experienceLevel: userProfile.experienceLevel,
                             }),
                             signal: controller.signal
                         });
@@ -207,10 +225,10 @@ const Assessment = () => {
         }
     };
 
-    const activeQuestion = level1Questions.find((q) => q.id === selectedQ);
-    const completionPct = Math.round((completedQs.size / level1Questions.length) * 100);
-    const isLastQuestion = selectedQ === level1Questions[level1Questions.length - 1].id;
-    const allCompleted = completedQs.size === level1Questions.length;
+    const activeQuestion = questions.find((q) => q.id === selectedQ);
+    const completionPct = Math.round((completedQs.size / questions.length) * 100);
+    const isLastQuestion = selectedQ === questions[questions.length - 1]?.id;
+    const allCompleted = completedQs.size === questions.length;
 
     return (
         <div className="h-screen flex flex-col bg-black text-white">
@@ -227,6 +245,14 @@ const Assessment = () => {
                             <span className="text-lg">🚪</span>
                             <span className="font-semibold tracking-tight">Level 1 — Gatekeeper</span>
                         </div>
+                        {/* Personalization badge */}
+                        {userProfile.profession && userProfile.profession !== "student" && (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30">
+                                <span className="text-[10px] text-indigo-400 font-medium capitalize">
+                                    ✨ {userProfile.profession} · {userProfile.domain}
+                                </span>
+                            </div>
+                        )}
                     </div>
                     {/* Progress bar */}
                     <div className="flex items-center gap-3">
@@ -253,8 +279,8 @@ const Assessment = () => {
                             Practice Questions
                         </h2>
                         <div className="space-y-2">
-                            {level1Questions.map((q, index) => {
-                                const isUnlocked = index === 0 || completedQs.has(level1Questions[index - 1].id);
+                            {questions.map((q, index) => {
+                                const isUnlocked = index === 0 || completedQs.has(questions[index - 1].id);
                                 return (
                                     <button
                                         key={q.id}
